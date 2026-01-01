@@ -23,7 +23,7 @@ router.post(
 );
 router.get(
   '/getMe',
-  auth(USER_ROLE.NORMALUSER, USER_ROLE.ADMIN, USER_ROLE.PROVIDER),
+  auth(USER_ROLE.NORMALUSER, USER_ROLE.ADMIN),
   UserControllers.getMe,
 );
 

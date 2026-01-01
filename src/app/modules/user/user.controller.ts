@@ -11,9 +11,6 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
   if (files && typeof files === 'object' && 'profile_image' in files) {
     req.body.profile_image = files['profile_image'][0].path;
   }
-  if (files && typeof files === 'object' && 'identification_images' in files) {
-    req.body.identification_images = files['identification_images'][0].path;
-  }
 
   const result = await UserServices.createUserIntoDB(req.body);
 

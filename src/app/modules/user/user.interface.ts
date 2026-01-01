@@ -33,7 +33,6 @@ export interface UserModel extends Model<TUser> {
 export interface UpdateUserPayload {
   fullName?: string;
   phone?: string;
-  gender?: 'MALE' | 'FEMALE';
-  dateOfBirth?: Date;
+
   profile_image?: string;
 }

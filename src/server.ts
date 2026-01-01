@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 import config from './app/config';
 import app from './app';
 import seedAdmin from './app/db/seedAdmin';
-import { initializeSocket } from './app/socket/socket';
 let server: Server;
 
 async function main() {
@@ -16,7 +15,6 @@ async function main() {
       console.log(`App listening on port ${config.port}`);
     });
     seedAdmin();
-    initializeSocket(server);
   } catch (error) {
     console.error('Error connecting to the database:', error);
   }
