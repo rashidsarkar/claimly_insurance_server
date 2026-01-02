@@ -10,8 +10,8 @@ export const uploadFile = () => {
 
       if (file.fieldname === 'profile_image') {
         uploadPath = 'uploads/images/profile';
-      } else if (file.fieldname === 'identification_images') {
-        uploadPath = 'uploads/images/identification_images';
+      } else if (file.fieldname === 'supporting_Documents') {
+        uploadPath = 'uploads/images/supporting_Documents';
       } else if (file.fieldname === 'medical_mySelf_image') {
         uploadPath = 'uploads/images/medical_mySelf_image';
       } else if (file.fieldname === 'medical_family_image') {
@@ -55,7 +55,7 @@ export const uploadFile = () => {
     const allowedFieldnames = [
       'image',
       'profile_image',
-      'identification_images',
+      'supporting_Documents',
       'appointment_images',
       'category_image',
       'medical_mySelf_image',
@@ -74,6 +74,7 @@ export const uploadFile = () => {
         file.mimetype === 'image/png' ||
         file.mimetype === 'image/webp' ||
         file.mimetype === 'image/jpg' ||
+        file.mimetype === 'application/pdf' ||
         file.mimetype === 'video/mp4'
       ) {
         cb(null, true);
@@ -91,7 +92,7 @@ export const uploadFile = () => {
   }).fields([
     { name: 'image', maxCount: 1 },
     { name: 'profile_image', maxCount: 1 },
-    { name: 'identification_images', maxCount: 1 },
+    { name: 'supporting_Documents', maxCount: 4 },
     { name: 'appointment_images', maxCount: 3 },
     { name: 'category_image', maxCount: 1 },
     { name: 'medical_mySelf_image', maxCount: 4 },

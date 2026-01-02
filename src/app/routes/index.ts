@@ -5,6 +5,7 @@ import { AuthRoutes } from '../modules/Auth/auth.route';
 import { notificationRoutes } from '../modules/notification/notification.routes';
 import { normalUserRoutes } from '../modules/normalUser/normalUser.routes';
 import { ManageRoutes } from '../modules/manage-web/manage.routes';
+import { insurerRoutes } from '../modules/insurer/insurer.routes';
 
 const router = Router();
 
@@ -32,6 +33,10 @@ const moduleRoutes = [
   {
     path: '/manage-Web',
     route: ManageRoutes,
+  },
+  {
+    path: '/insurer',
+    route: insurerRoutes,
   },
 ];
 
