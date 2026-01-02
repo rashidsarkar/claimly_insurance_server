@@ -1,11 +1,7 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const updateInsurerData = z.object({
-    body: z.object({
-        name: z.string().optional(),
-        phone: z.string().optional(),
-        address: z.string().optional(),
-    }),
+  body: z.object({}),
 });
 
 const InsurerValidations = { updateInsurerData };
