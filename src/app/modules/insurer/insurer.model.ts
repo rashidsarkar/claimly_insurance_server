@@ -1,5 +1,10 @@
 import { model, Schema } from 'mongoose';
-import { IInsurer } from './insurer.interface';
+import {
+  ENUM_COMPLAINT_MADE,
+  ENUM_INSURER_STATUS,
+  ENUM_POLICY_TYPE,
+  IInsurer,
+} from './insurer.interface';
 
 const insurerSchema = new Schema<IInsurer>(
   {
@@ -12,13 +17,7 @@ const insurerSchema = new Schema<IInsurer>(
     insurerName: { type: String, required: true },
     policyType: {
       type: String,
-      enum: [
-        'Comprehensive',
-        'Comprehensive Basic',
-        'Third Party Fire & Theft',
-        'Third Party Property Damage',
-        'Other / Not sure',
-      ],
+      enum: Object.values(ENUM_POLICY_TYPE),
       required: true,
     },
 
@@ -31,8 +30,8 @@ const insurerSchema = new Schema<IInsurer>(
 
     complaintMade: {
       type: String,
-      enum: ['no', 'yesWithInsurer', 'yesWithAfca'],
-      default: 'no',
+      enum: Object.values(ENUM_COMPLAINT_MADE),
+      default: ENUM_COMPLAINT_MADE.NO,
     },
     complaintStatus: String,
 
@@ -42,8 +41,8 @@ const insurerSchema = new Schema<IInsurer>(
     failureNote: String,
     status: {
       type: String,
-      enum: ['underReview', 'reportReady', 'failed'],
-      default: 'underReview',
+      enum: Object.values(ENUM_INSURER_STATUS),
+      default: ENUM_INSURER_STATUS.UNDER_REVIEW,
     },
   },
   { timestamps: true },
@@ -54,8 +53,8 @@ const insurerSchema = new Schema<IInsurer>(
  * If status === 'failed', failureNote must exist
  */
 insurerSchema.pre('save', function (next) {
-  if (this.status === 'failed' && !this.failureNote) {
-    return next(new Error('failureNote is required when status is failed'));
+  if (this.status === ENUM_INSURER_STATUS.FAILED && !this.failureNote) {
+    return next(new Error('failureNote is required when status is FAILED'));
   }
   next();
 });

@@ -12,10 +12,6 @@ const createInsurer = catchAsync(async (req, res) => {
         (file) => file.path,
       );
     }
-
-    if ('report_Document' in files) {
-      req.body.report_Document = files['report_Document'][0].path;
-    }
   }
 
   const result = await InsurerServices.createInsurer(
@@ -31,5 +27,19 @@ const createInsurer = catchAsync(async (req, res) => {
   });
 });
 
-const InsurerController = { createInsurer };
+const getMyInsurers = catchAsync(async (req, res) => {
+  const result = await InsurerServices.getMyInsurers(
+    req.user.profileId,
+    req.body.status,
+  );
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Insurer records fetched',
+    data: result,
+  });
+});
+
+const InsurerController = { createInsurer, getMyInsurers };
 export default InsurerController;

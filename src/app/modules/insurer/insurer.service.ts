@@ -2,12 +2,32 @@ import { StatusCodes } from 'http-status-codes';
 import AppError from '../../errors/AppError';
 import { IInsurer } from './insurer.interface';
 import Insurer from './insurer.model';
+import mongoose from 'mongoose';
 
 const createInsurer = async (userId: string, payload: Partial<IInsurer>) => {
   return await Insurer.create({
     ...payload,
     normalUserId: userId,
   });
+};
+
+const getMyInsurers = async (userId: string, status: string) => {
+  console.log(userId, status);
+
+  // const result = await Insurer.find({
+  //   normalUserId: new mongoose.Types.ObjectId(userId),
+  //   status: status,
+  // }).sort({
+  //   createdAt: -1,
+  // });
+  const result = await Insurer.find({
+    normalUserId: new mongoose.Types.ObjectId(userId),
+  });
+  if (!result) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Insurer record not found');
+  }
+
+  return result;
 };
 
 const getSingleInsurer = async (id: string) => {
@@ -50,5 +70,6 @@ const InsurerServices = {
   getSingleInsurer,
   updateInsurer,
   deleteInsurer,
+  getMyInsurers,
 };
 export default InsurerServices;

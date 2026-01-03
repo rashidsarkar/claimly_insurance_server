@@ -1,56 +1,75 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Request } from 'express';
 import multer from 'multer';
 import fs from 'fs';
+import path from 'path';
+
 export const uploadFile = () => {
+  /**
+   * =============================
+   * STORAGE CONFIG
+   * =============================
+   */
   const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      let uploadPath = '';
+      let uploadPath = 'uploads';
 
-      if (file.fieldname === 'profile_image') {
-        uploadPath = 'uploads/images/profile';
-      } else if (file.fieldname === 'supporting_Documents') {
-        uploadPath = 'uploads/images/supporting_Documents';
-      } else if (file.fieldname === 'medical_mySelf_image') {
-        uploadPath = 'uploads/images/medical_mySelf_image';
-      } else if (file.fieldname === 'medical_family_image') {
-        uploadPath = 'uploads/images/medical_family_image';
-      } else if (file.fieldname === 'insurance_Photo') {
-        uploadPath = 'uploads/images/insurance_Photo';
-      } else if (file.fieldname === 'article_image') {
-        uploadPath = 'uploads/images/article_image';
-      } else if (file.fieldname === 'video') {
-        uploadPath = 'uploads/video';
-      } else if (file.fieldname === 'category_image') {
-        uploadPath = 'uploads/images/category_images';
-      } else {
-        uploadPath = 'uploads';
+      switch (file.fieldname) {
+        case 'profile_image':
+          uploadPath = 'uploads/images/profile';
+          break;
+
+        case 'supporting_Documents':
+          uploadPath = 'uploads/images/supporting_Documents';
+          break;
+
+        case 'medical_mySelf_image':
+          uploadPath = 'uploads/images/medical_mySelf_image';
+          break;
+
+        case 'medical_family_image':
+          uploadPath = 'uploads/images/medical_family_image';
+          break;
+
+        case 'insurance_Photo':
+          uploadPath = 'uploads/images/insurance_Photo';
+          break;
+
+        case 'article_image':
+          uploadPath = 'uploads/images/article_image';
+          break;
+
+        case 'category_image':
+          uploadPath = 'uploads/images/category_images';
+          break;
+
+        case 'video':
+          uploadPath = 'uploads/video';
+          break;
+
+        default:
+          uploadPath = 'uploads';
       }
 
       if (!fs.existsSync(uploadPath)) {
         fs.mkdirSync(uploadPath, { recursive: true });
       }
 
-      if (
-        file.mimetype === 'image/jpeg' ||
-        file.mimetype === 'image/png' ||
-        file.mimetype === 'image/jpg' ||
-        file.mimetype === 'image/webp' ||
-        file.mimetype === 'video/mp4'
-      ) {
-        cb(null, uploadPath);
-      } else {
-        //@ts-ignore
-        cb(new Error('Invalid file type'));
-      }
+      cb(null, uploadPath);
     },
+
     filename: function (req, file, cb) {
-      const name = Date.now() + '-' + file.originalname;
-      cb(null, name);
+      const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1e9);
+      const ext = path.extname(file.originalname);
+      cb(null, `${uniqueName}${ext}`);
     },
   });
 
+  /**
+   * =============================
+   * FILE FILTER
+   * =============================
+   */
   const fileFilter = (req: Request, file: any, cb: any) => {
     const allowedFieldnames = [
       'image',
@@ -65,30 +84,37 @@ export const uploadFile = () => {
       'video',
     ];
 
-    if (file.fieldname === undefined) {
-      // Allow requests without any files
-      cb(null, true);
-    } else if (allowedFieldnames.includes(file.fieldname)) {
-      if (
-        file.mimetype === 'image/jpeg' ||
-        file.mimetype === 'image/png' ||
-        file.mimetype === 'image/webp' ||
-        file.mimetype === 'image/jpg' ||
-        file.mimetype === 'application/pdf' ||
-        file.mimetype === 'video/mp4'
-      ) {
-        cb(null, true);
-      } else {
-        cb(new Error('Invalid file type'));
-      }
-    } else {
-      cb(new Error('Invalid fieldname'));
+    const allowedMimeTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/jpg',
+      'image/webp',
+      'application/pdf',
+      'video/mp4',
+    ];
+
+    if (!allowedFieldnames.includes(file.fieldname)) {
+      return cb(new Error('Invalid fieldname'));
     }
+
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      return cb(new Error('Invalid file type'));
+    }
+
+    cb(null, true);
   };
 
+  /**
+   * =============================
+   * MULTER INSTANCE
+   * =============================
+   */
   const upload = multer({
-    storage: storage,
-    fileFilter: fileFilter,
+    storage,
+    fileFilter,
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10MB per file
+    },
   }).fields([
     { name: 'image', maxCount: 1 },
     { name: 'profile_image', maxCount: 1 },
