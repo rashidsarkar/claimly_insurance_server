@@ -29,4 +29,29 @@ router.get(
   insurerController.getMyInsurers,
 );
 
+router.get(
+  '/all-insurers',
+  auth(USER_ROLE.ADMIN),
+  insurerController.getAllInsurers,
+);
+router.get(
+  '/single-insurer/:id',
+  auth(USER_ROLE.ADMIN),
+  insurerController.getSingleInsurer,
+);
+router.patch(
+  '/update-insurer/:id',
+  auth(USER_ROLE.ADMIN),
+  uploadFile(),
+  (req: Request, res: Response, next: NextFunction) => {
+    if (req.body.data) {
+      req.body = JSON.parse(req.body.data);
+    }
+    next();
+  },
+  validateRequest(insurerValidations.updateInsurer),
+  insurerController.updateInsurer,
+);
+// router.delete('/delete-insurer/:id', insurerController.deleteInsurer);
+
 export const insurerRoutes = router;
