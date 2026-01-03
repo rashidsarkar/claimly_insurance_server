@@ -434,6 +434,9 @@ const updateMyProfileIntoDB = async (
         unlinkFile(existingProfile.profile_image);
       }
 
+      const { email, ...remaiiningData } = data;
+      console.log(email, remaiiningData);
+
       const updatedProfile = await NormalUser.findByIdAndUpdate(
         profileId,
         data,
@@ -443,36 +446,6 @@ const updateMyProfileIntoDB = async (
           session: session,
         },
       );
-
-      if (existingProfile.user) {
-        await User.findByIdAndUpdate(
-          existingProfile.user.toString(),
-          {
-            fullName: data.fullName,
-            phone: data.phone,
-          },
-          { session: session },
-        );
-      }
-
-      await session.commitTransaction();
-      return updatedProfile;
-    } else if (role === USER_ROLE.PROVIDER) {
-      const existingProfile =
-        await Provider.findById(profileId).session(session);
-      if (!existingProfile) {
-        throw new AppError(StatusCodes.NOT_FOUND, 'Profile not found');
-      }
-
-      if (existingProfile.profile_image && data.profile_image) {
-        unlinkFile(existingProfile.profile_image);
-      }
-
-      const updatedProfile = await Provider.findByIdAndUpdate(profileId, data, {
-        new: true,
-        runValidators: true,
-        session: session,
-      });
 
       if (existingProfile.user) {
         await User.findByIdAndUpdate(
