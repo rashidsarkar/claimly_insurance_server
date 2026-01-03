@@ -21,22 +21,9 @@ const router = express.Router();
 
 router.get('/', auth(USER_ROLE.ADMIN), NormalUserController.getAllNormalUsers);
 
-// 🔹 Active Normal Users
-router.get(
-  '/active',
-  auth(USER_ROLE.ADMIN),
-  NormalUserController.getAllActiveNormalUsers,
-);
-
-// // 🔹 Blocked Normal Users
-router.get(
-  '/blocked',
-  auth(USER_ROLE.ADMIN),
-  NormalUserController.getAllBlockedNormalUsers,
-);
 router.get(
   '/:id',
-  auth(USER_ROLE.ADMIN, USER_ROLE.PROVIDER),
+  auth(USER_ROLE.ADMIN, USER_ROLE.NORMALUSER),
   NormalUserController.getSingleNormalUserProfile,
 );
 export const normalUserRoutes = router;

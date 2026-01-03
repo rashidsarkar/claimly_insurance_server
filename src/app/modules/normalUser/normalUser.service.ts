@@ -1,11 +1,77 @@
 import { Types } from 'mongoose';
 import NormalUser from './normalUser.model';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 const getSingleNormalUserProfile = async (profileId: string) => {
-  const result = await NormalUser.aggregate([
-    {
-      $match: { _id: new Types.ObjectId(profileId) },
-    },
+  const result = await NormalUser.findOne({
+    _id: new Types.ObjectId(profileId),
+  }).populate({
+    path: 'user',
+    select:
+      '-password -verifyEmailOTP -verifyEmailOTPExpire -isResetOTPVerified -__v',
+  });
+
+  return result;
+};
+
+const getAllNormalUsers = async (query: Record<string, unknown>) => {
+  /**
+   * =============================
+   * PAGINATION
+   * =============================
+   */
+  const page = Number(query.page) || 1;
+  const limit = Number(query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  /**
+   * =============================
+   * SEARCHABLE FIELDS
+   * =============================
+   */
+  const searchableFields = ['fullName', 'email', 'phone'];
+
+  /**
+   * =============================
+   * EXTRACT isBlocked & REMOVE IT FROM QUERY
+   * =============================
+   */
+  const { isBlocked, ...restQuery } = query;
+
+  /**
+   * =============================
+   * QUERY BUILDER (WITHOUT isBlocked)
+   * =============================
+   */
+  const queryBuilder = new QueryBuilder(NormalUser.find(), restQuery)
+    .search(searchableFields)
+    .filter()
+    .sort();
+
+  const filter = queryBuilder.modelQuery.getFilter();
+  const sort = queryBuilder.modelQuery.getOptions()?.sort || {
+    createdAt: -1,
+  };
+
+  /**
+   * =============================
+   * isBlocked BOOLEAN
+   * =============================
+   */
+  let isBlockedBool: boolean | undefined;
+
+  if (isBlocked !== undefined) {
+    isBlockedBool = isBlocked === 'true';
+  }
+
+  /**
+   * =============================
+   * AGGREGATION (ONLY SOURCE OF TRUTH)
+   * =============================
+   */
+  const aggregation = await NormalUser.aggregate([
+    { $match: filter },
+
     {
       $lookup: {
         from: 'users',
@@ -16,7 +82,9 @@ const getSingleNormalUserProfile = async (profileId: string) => {
               $expr: {
                 $and: [
                   { $eq: ['$profileId', '$$normalUserId'] },
-                  // { $eq: ['$isBlocked', true] }, // only active users
+                  ...(isBlockedBool !== undefined
+                    ? [{ $eq: ['$isBlocked', isBlockedBool] }]
+                    : []),
                 ],
               },
             },
@@ -34,70 +102,23 @@ const getSingleNormalUserProfile = async (profileId: string) => {
         as: 'user',
       },
     },
+
+    // 🔥 IMPORTANT: remove users without match
+    { $match: { user: { $ne: [] } } },
+
+    { $sort: sort },
+
     {
-      $lookup: {
-        from: 'medicaldocuments',
-        localField: '_id',
-        foreignField: 'normalUserId',
-        as: 'medicalDocument',
+      $facet: {
+        data: [{ $skip: skip }, { $limit: limit }],
+        total: [{ $count: 'count' }],
       },
     },
   ]);
-  return result;
-};
 
-const getAllNormalUsers = async (query: Record<string, unknown>) => {
-  // 1️⃣ PAGINATION SETUP
-  const page = Number(query.page) || 1;
-  const limit = Number(query.limit) || 10;
-  const skip = (page - 1) * limit;
-
-  // 2️⃣ GET TOTAL COUNT
-  const total = await NormalUser.countDocuments();
-
-  // 3️⃣ GET PAGINATED DATA
-  const result = await NormalUser.aggregate([
-    {
-      $lookup: {
-        from: 'medicaldocuments',
-        localField: '_id',
-        foreignField: 'normalUserId',
-        as: 'medicalDocument',
-      },
-    },
-    {
-      $lookup: {
-        from: 'users',
-        let: { normalUserId: { $toString: '$_id' } },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $eq: ['$profileId', '$$normalUserId'],
-              },
-            },
-          },
-          {
-            $project: {
-              password: 0, // ❌ remove password
-              verifyEmailOTP: 0,
-              verifyEmailOTPExpire: 0,
-              isResetOTPVerified: 0,
-              __v: 0,
-            },
-          },
-        ],
-        as: 'user',
-      },
-    },
-  ])
-    .skip(skip)
-    .limit(limit)
-    .sort({ createdAt: -1 }); // optional
-
+  const total = aggregation[0]?.total[0]?.count || 0;
   const totalPage = Math.ceil(total / limit);
 
-  // 4️⃣ RETURN DATA + META
   return {
     meta: {
       page,
@@ -105,138 +126,12 @@ const getAllNormalUsers = async (query: Record<string, unknown>) => {
       total,
       totalPage,
     },
-    data: result,
+    data: aggregation[0]?.data || [],
   };
 };
 
-const getAllActiveNormalUsers = async (query: Record<string, unknown>) => {
-  const page = Number(query.page) || 1;
-  const limit = Number(query.limit) || 10;
-  const skip = (page - 1) * limit;
-
-  // 1️⃣ Aggregation pipeline with $facet (data + total count in one query)
-  const aggResult = await NormalUser.aggregate([
-    {
-      $lookup: {
-        from: 'users',
-        let: { normalUserId: { $toString: '$_id' } },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $and: [
-                  { $eq: ['$profileId', '$$normalUserId'] },
-                  { $eq: ['$isBlocked', false] }, // only active users
-                ],
-              },
-            },
-          },
-          {
-            $project: {
-              password: 0,
-              verifyEmailOTP: 0,
-              verifyEmailOTPExpire: 0,
-              isResetOTPVerified: 0,
-              __v: 0,
-            },
-          },
-        ],
-        as: 'user',
-      },
-    },
-    { $match: { user: { $ne: [] } } }, // only NormalUsers that have active users
-    {
-      $lookup: {
-        from: 'medicaldocuments',
-        localField: '_id',
-        foreignField: 'normalUserId',
-        as: 'medicalDocument',
-      },
-    },
-    { $sort: { createdAt: -1 } },
-    {
-      $facet: {
-        data: [{ $skip: skip }, { $limit: limit }],
-        totalCount: [{ $count: 'count' }],
-      },
-    },
-  ]);
-
-  const data = aggResult[0].data;
-  const totalCount = aggResult[0].totalCount[0]?.count || 0;
-  const totalPage = Math.ceil(totalCount / limit);
-
-  return {
-    meta: { page, limit, total: totalCount, totalPage },
-    data,
-  };
-};
-const getAllBlockNormalUsers = async (query: Record<string, unknown>) => {
-  const page = Number(query.page) || 1;
-  const limit = Number(query.limit) || 10;
-  const skip = (page - 1) * limit;
-
-  // 1️⃣ Aggregation pipeline with $facet (data + total count in one query)
-  const aggResult = await NormalUser.aggregate([
-    {
-      $lookup: {
-        from: 'users',
-        let: { normalUserId: { $toString: '$_id' } },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $and: [
-                  { $eq: ['$profileId', '$$normalUserId'] },
-                  { $eq: ['$isBlocked', true] }, // only active users
-                ],
-              },
-            },
-          },
-          {
-            $project: {
-              password: 0,
-              verifyEmailOTP: 0,
-              verifyEmailOTPExpire: 0,
-              isResetOTPVerified: 0,
-              __v: 0,
-            },
-          },
-        ],
-        as: 'user',
-      },
-    },
-    { $match: { user: { $ne: [] } } }, // only NormalUsers that have active users
-    {
-      $lookup: {
-        from: 'medicaldocuments',
-        localField: '_id',
-        foreignField: 'normalUserId',
-        as: 'medicalDocument',
-      },
-    },
-    { $sort: { createdAt: -1 } },
-    {
-      $facet: {
-        data: [{ $skip: skip }, { $limit: limit }],
-        totalCount: [{ $count: 'count' }],
-      },
-    },
-  ]);
-
-  const data = aggResult[0].data;
-  const totalCount = aggResult[0].totalCount[0]?.count || 0;
-  const totalPage = Math.ceil(totalCount / limit);
-
-  return {
-    meta: { page, limit, total: totalCount, totalPage },
-    data,
-  };
-};
 const NormalUserServices = {
   getSingleNormalUserProfile,
   getAllNormalUsers,
-  getAllActiveNormalUsers,
-  getAllBlockNormalUsers,
 };
 export default NormalUserServices;

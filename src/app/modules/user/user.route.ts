@@ -32,7 +32,7 @@ router.get('/getAllUser', auth(USER_ROLE.ADMIN), UserControllers.getUsers);
 
 router.patch(
   '/updateMe',
-  auth(USER_ROLE.NORMALUSER, USER_ROLE.ADMIN, USER_ROLE.PROVIDER),
+  auth(USER_ROLE.NORMALUSER, USER_ROLE.ADMIN),
   uploadFile(),
   (req: Request, res: Response, next: NextFunction) => {
     if (req.body.data) {
