@@ -3,6 +3,7 @@ import AppError from '../../errors/AppError';
 import { IInsurer } from './insurer.interface';
 import Insurer from './insurer.model';
 import mongoose from 'mongoose';
+import unlinkFile from '../../utils/unLinkFile';
 
 const createInsurer = async (userId: string, payload: Partial<IInsurer>) => {
   return await Insurer.create({
@@ -30,8 +31,50 @@ const getMyInsurers = async (userId: string, status: string) => {
   return result;
 };
 
+const getAllInsurers = async (query: Record<string, unknown>) => {
+  /**
+   * =============================
+   * PAGINATION
+   * =============================
+   */
+  const page = Number(query.page) || 1;
+  const limit = Number(query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  /**
+   * =============================
+   * =============================
+   * DB QUERIES
+   * =============================
+   */
+  const total = await Insurer.countDocuments();
+
+  const result = await Insurer.find()
+    .skip(skip)
+    .limit(limit)
+    .sort({ createdAt: -1 })
+    .populate('normalUserId');
+
+  const totalPage = Math.ceil(total / limit);
+
+  /**
+   * =============================
+   * RESPONSE
+   * =============================
+   */
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+      totalPage,
+    },
+    data: result,
+  };
+};
+
 const getSingleInsurer = async (id: string) => {
-  const insurer = await Insurer.findById(id);
+  const insurer = await Insurer.findById(id).populate('normalUserId');
   if (!insurer) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Insurer record not found');
   }
@@ -39,12 +82,12 @@ const getSingleInsurer = async (id: string) => {
 };
 
 const updateInsurer = async (id: string, payload: Partial<IInsurer>) => {
-  if (payload.status === 'failed' && !payload.failureNote) {
-    throw new AppError(
-      StatusCodes.BAD_REQUEST,
-      'failureNote is required when status is failed',
-    );
-  }
+  // if (payload.status === ENUM_INSURER_STATUS.FAILED && !payload.failureNote) {
+  //   throw new AppError(
+  //     StatusCodes.BAD_REQUEST,
+  //     'failureNote is required when status is failed',
+  //   );
+  // }
 
   const insurer = await Insurer.findById(id);
   if (!insurer) {
@@ -62,6 +105,29 @@ const deleteInsurer = async (id: string) => {
   if (!insurer) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Insurer record not found');
   }
+
+  if (insurer.supporting_Documents) {
+    if (insurer.supporting_Documents.length > 0) {
+      for (const image of insurer.supporting_Documents) {
+        console.log(image + ' this is deleted');
+        unlinkFile(image);
+      }
+    }
+  }
+
+  if (insurer.report_Document) {
+    if (insurer.report_Document?.length > 0) {
+      for (const image of insurer.report_Document) {
+        console.log(image + ' this is deleted');
+        unlinkFile(image);
+      }
+    }
+  }
+  //   // delete files from storage
+  // for (const image of insurer.supporting_Documents) {
+  //   unlinkFile(image);
+  // }
+
   return await Insurer.findByIdAndDelete(id);
 };
 
@@ -71,5 +137,6 @@ const InsurerServices = {
   updateInsurer,
   deleteInsurer,
   getMyInsurers,
+  getAllInsurers,
 };
 export default InsurerServices;

@@ -46,17 +46,7 @@ const createInsurer = z.object({
 const updateInsurer = z.object({
   body: z
     .object({
-      insurerName: z.string().optional(),
-
-      policyType: z.nativeEnum(ENUM_POLICY_TYPE).optional(),
-
-      insurerResponse: z.string().optional(),
-      userConcern: z.string().optional(),
-
-      complaintMade: z.nativeEnum(ENUM_COMPLAINT_MADE).optional(),
-      complaintStatus: z.string().optional(),
-
-      status: z.nativeEnum(ENUM_INSURER_STATUS).optional(),
+      status: z.nativeEnum(ENUM_INSURER_STATUS),
       failureNote: z.string().optional(),
     })
     .refine(
@@ -67,8 +57,18 @@ const updateInsurer = z.object({
         path: ['failureNote'],
       },
     ),
+  // .refine(
+  //   (data) =>
+  //     !(
+  //       data.status === ENUM_INSURER_STATUS.REPORT_READY &&
+  //       !data.report_Document
+  //     ),
+  //   {
+  //     message: 'report_Document is required when status is REPORT_READY',
+  //     path: ['report_Document'],
+  //   },
+  // ),
 });
-
 const getMyInsurer = z.object({
   body: z.object({
     status: z.nativeEnum(ENUM_INSURER_STATUS),

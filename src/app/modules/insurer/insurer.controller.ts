@@ -27,6 +27,37 @@ const createInsurer = catchAsync(async (req, res) => {
   });
 });
 
+const updateInsurer = catchAsync(async (req, res) => {
+  const { files } = req;
+
+  if (files && typeof files === 'object') {
+    if ('report_Document' in files) {
+      req.body.report_Document = files['report_Document'].map(
+        (file) => file.path,
+      );
+    }
+  }
+
+  const result = await InsurerServices.updateInsurer(req.params.id, req.body);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Insurer record updated successfully',
+    data: result,
+  });
+});
+
+const deleteInsurer = catchAsync(async (req, res) => {
+  const result = await InsurerServices.deleteInsurer(req.params.id);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Insurer record deleted successfully',
+    data: result,
+  });
+});
+
 const getMyInsurers = catchAsync(async (req, res) => {
   const result = await InsurerServices.getMyInsurers(
     req.user.profileId,
@@ -41,5 +72,33 @@ const getMyInsurers = catchAsync(async (req, res) => {
   });
 });
 
-const InsurerController = { createInsurer, getMyInsurers };
+const getAllInsurers = catchAsync(async (req, res) => {
+  const result = await InsurerServices.getAllInsurers(req.query);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Insurer records fetched',
+    data: result,
+  });
+});
+
+const getSingleInsurer = catchAsync(async (req, res) => {
+  const result = await InsurerServices.getSingleInsurer(req.params.id);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Insurer record fetched',
+    data: result,
+  });
+});
+
+const InsurerController = {
+  createInsurer,
+  getMyInsurers,
+  getAllInsurers,
+  getSingleInsurer,
+  updateInsurer,
+  deleteInsurer,
+};
 export default InsurerController;

@@ -36,7 +36,7 @@ const insurerSchema = new Schema<IInsurer>(
     complaintStatus: String,
 
     supporting_Documents: [String],
-    report_Document: String,
+    report_Document: [String],
 
     failureNote: String,
     status: {
@@ -55,6 +55,13 @@ const insurerSchema = new Schema<IInsurer>(
 insurerSchema.pre('save', function (next) {
   if (this.status === ENUM_INSURER_STATUS.FAILED && !this.failureNote) {
     return next(new Error('failureNote is required when status is FAILED'));
+  } else if (
+    this.status === ENUM_INSURER_STATUS.REPORT_READY &&
+    !this.report_Document
+  ) {
+    return next(
+      new Error('report_Document is required when status is REPORT_READY'),
+    );
   }
   next();
 });

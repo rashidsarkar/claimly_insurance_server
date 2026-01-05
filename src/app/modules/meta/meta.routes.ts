@@ -12,14 +12,14 @@ router.get(
   MetaController.getDashboardMetaData,
 );
 router.get(
-  '/normalUser-chart-data',
+  '/user-chart-data',
   auth(USER_ROLE.ADMIN),
   MetaController.getNormalUserChartData,
 );
-router.get(
-  '/provider-chart-data',
-  auth(USER_ROLE.ADMIN),
-  MetaController.getProviderChartData,
-);
+// router.get(
+//   '/provider-chart-data',
+//   auth(USER_ROLE.ADMIN),
+//   MetaController.getProviderChartData,
+// );
 
 export const metaRoutes = router;

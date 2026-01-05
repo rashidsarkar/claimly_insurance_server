@@ -23,8 +23,8 @@ export const uploadFile = () => {
           uploadPath = 'uploads/images/supporting_Documents';
           break;
 
-        case 'medical_mySelf_image':
-          uploadPath = 'uploads/images/medical_mySelf_image';
+        case 'report_Document':
+          uploadPath = 'uploads/images/report_Document';
           break;
 
         case 'medical_family_image':
@@ -77,7 +77,7 @@ export const uploadFile = () => {
       'supporting_Documents',
       'appointment_images',
       'category_image',
-      'medical_mySelf_image',
+      'report_Document',
       'medical_family_image',
       'insurance_Photo',
       'article_image',
@@ -121,7 +121,7 @@ export const uploadFile = () => {
     { name: 'supporting_Documents', maxCount: 4 },
     { name: 'appointment_images', maxCount: 3 },
     { name: 'category_image', maxCount: 1 },
-    { name: 'medical_mySelf_image', maxCount: 4 },
+    { name: 'report_Document', maxCount: 4 },
     { name: 'medical_family_image', maxCount: 4 },
     { name: 'insurance_Photo', maxCount: 4 },
     { name: 'article_image', maxCount: 2 },
