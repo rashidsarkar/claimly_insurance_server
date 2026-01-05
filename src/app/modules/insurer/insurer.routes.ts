@@ -52,6 +52,6 @@ router.patch(
   validateRequest(insurerValidations.updateInsurer),
   insurerController.updateInsurer,
 );
-// router.delete('/delete-insurer/:id', insurerController.deleteInsurer);
+router.delete('/delete-insurer/:id', insurerController.deleteInsurer);
 
 export const insurerRoutes = router;

@@ -3,6 +3,7 @@ import AppError from '../../errors/AppError';
 import { IInsurer } from './insurer.interface';
 import Insurer from './insurer.model';
 import mongoose from 'mongoose';
+import unlinkFile from '../../utils/unLinkFile';
 
 const createInsurer = async (userId: string, payload: Partial<IInsurer>) => {
   return await Insurer.create({
@@ -104,6 +105,27 @@ const deleteInsurer = async (id: string) => {
   if (!insurer) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Insurer record not found');
   }
+
+  if (insurer.supporting_Documents) {
+    if (insurer.supporting_Documents.length > 0) {
+      for (const image of insurer.supporting_Documents) {
+        unlinkFile(image);
+      }
+    }
+  }
+
+  if (insurer.report_Document) {
+    if (insurer.report_Document?.length > 0) {
+      for (const image of insurer.report_Document) {
+        unlinkFile(image);
+      }
+    }
+  }
+  //   // delete files from storage
+  // for (const image of insurer.supporting_Documents) {
+  //   unlinkFile(image);
+  // }
+
   return await Insurer.findByIdAndDelete(id);
 };
 

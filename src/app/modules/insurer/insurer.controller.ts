@@ -48,6 +48,16 @@ const updateInsurer = catchAsync(async (req, res) => {
   });
 });
 
+const deleteInsurer = catchAsync(async (req, res) => {
+  const result = await InsurerServices.deleteInsurer(req.params.id);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Insurer record deleted successfully',
+    data: result,
+  });
+});
+
 const getMyInsurers = catchAsync(async (req, res) => {
   const result = await InsurerServices.getMyInsurers(
     req.user.profileId,
@@ -89,5 +99,6 @@ const InsurerController = {
   getAllInsurers,
   getSingleInsurer,
   updateInsurer,
+  deleteInsurer,
 };
 export default InsurerController;
