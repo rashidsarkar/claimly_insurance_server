@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import AppError from '../../errors/AppError';
-import { ENUM_INSURER_STATUS, IInsurer } from './insurer.interface';
+import { IInsurer } from './insurer.interface';
 import Insurer from './insurer.model';
 import mongoose from 'mongoose';
 

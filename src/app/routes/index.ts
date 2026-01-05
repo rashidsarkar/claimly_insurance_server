@@ -6,6 +6,7 @@ import { notificationRoutes } from '../modules/notification/notification.routes'
 import { normalUserRoutes } from '../modules/normalUser/normalUser.routes';
 import { ManageRoutes } from '../modules/manage-web/manage.routes';
 import { insurerRoutes } from '../modules/insurer/insurer.routes';
+import { claimlyGuideRoutes } from '../modules/claimlyGuide/claimlyGuide.routes';
 
 const router = Router();
 
@@ -37,6 +38,10 @@ const moduleRoutes = [
   {
     path: '/insurer',
     route: insurerRoutes,
+  },
+  {
+    path: '/claimlyGuide',
+    route: claimlyGuideRoutes,
   },
 ];
 
