@@ -109,6 +109,7 @@ const deleteInsurer = async (id: string) => {
   if (insurer.supporting_Documents) {
     if (insurer.supporting_Documents.length > 0) {
       for (const image of insurer.supporting_Documents) {
+        console.log(image + ' this is deleted');
         unlinkFile(image);
       }
     }
@@ -117,6 +118,7 @@ const deleteInsurer = async (id: string) => {
   if (insurer.report_Document) {
     if (insurer.report_Document?.length > 0) {
       for (const image of insurer.report_Document) {
+        console.log(image + ' this is deleted');
         unlinkFile(image);
       }
     }
