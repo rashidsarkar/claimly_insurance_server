@@ -7,6 +7,7 @@ import { normalUserRoutes } from '../modules/normalUser/normalUser.routes';
 import { ManageRoutes } from '../modules/manage-web/manage.routes';
 import { insurerRoutes } from '../modules/insurer/insurer.routes';
 import { claimlyGuideRoutes } from '../modules/claimlyGuide/claimlyGuide.routes';
+import { metaRoutes } from '../modules/meta/meta.routes';
 
 const router = Router();
 
@@ -23,10 +24,10 @@ const moduleRoutes = [
     path: '/notification',
     route: notificationRoutes,
   },
-  // {
-  //   path: '/meta',
-  //   route: metaRoutes,
-  // },
+  {
+    path: '/meta',
+    route: metaRoutes,
+  },
   {
     path: '/normal-User',
     route: normalUserRoutes,
