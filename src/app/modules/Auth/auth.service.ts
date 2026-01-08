@@ -224,8 +224,20 @@ const verifyEmailOTP = async (email: string, otp: string) => {
       isVerifyEmailOTPVerified: true,
     },
   );
+  const jwtPayload = {
+    id: userData?._id,
+    profileId: userData.profileId,
+    email: userData.email,
+    role: userData.role,
+  };
 
-  return { message: 'Email OTP verified successfully' };
+  const accessToken = generateToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    config.jwt_access_expires_in,
+  );
+
+  return { message: 'Email OTP verified successfully', accessToken };
 };
 
 const resetPassword = async (email: string, password: string) => {
