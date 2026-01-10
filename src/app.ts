@@ -10,13 +10,34 @@ const app: Application = express();
 
 // parsers
 app.use(express.json());
+app.use(cookieParser());
+
 app.use(
   cors({
-    origin: ['http://localhost:3000', 'http://10.10.20.48:3000'],
+    origin: [
+      'http://localhost:3000',
+      'http://10.10.20.48:3000',
+      'http://localhost:5454',
+      'http://10.10.20.3:5454',
+    ],
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'], // Explicitly allow the header you are sending
   }),
 );
-app.use(cookieParser());
+// app.use(
+//   cors({
+//     origin: ['http://localhost:5454', 'http://10.10.20.3:5454'],
+//     credentials: true,
+//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+//     allowedHeaders: [
+//       'Content-Type',
+//       'Authorization',
+//       'X-Requested-With',
+//       'Accept',
+//       'Origin',
+//     ],
+//   }),
+// );
 
 app.use('/api/v1/', router);
 app.use('/uploads', express.static('uploads'));

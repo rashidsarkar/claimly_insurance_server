@@ -64,7 +64,7 @@ const forgotPassword = catchAsync(async (req, res) => {
     statusCode: StatusCodes.OK,
     success: true,
     message: 'Password reset URL sent to email successfully',
-    data: 'check your email inbox',
+    data: result,
   });
 });
 

@@ -181,7 +181,7 @@ const forgotPassword = async (email: string) => {
     <p>This OTP is valid for 10 minutes only.</p>
     `,
   );
-  return { message: 'OTP sent to your email' };
+  return { message: 'OTP sent to your email', email: email };
 };
 
 const verifyOTP = async (email: string, otp: string) => {

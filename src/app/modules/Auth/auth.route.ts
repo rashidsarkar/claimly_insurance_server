@@ -12,7 +12,7 @@ router.post(
   validateRequest(AuthValidation.loginValidationSchema),
   AuthControllers.loginUser,
 );
-router.post('/refresh-token', AuthControllers.refreshToken);
+// router.post('/refresh-token', AuthControllers.refreshToken);
 router.post(
   '/change-password',
   auth(USER_ROLE.ADMIN, USER_ROLE.NORMALUSER),

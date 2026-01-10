@@ -29,16 +29,16 @@ const forgotPasswordValidationSchema = z.object({
     }),
   }),
 });
-const verifyOTPValidationSchema=z.object({
-  body:z.object({
-    email:z.string({
-      required_error:'email is required'
+const verifyOTPValidationSchema = z.object({
+  body: z.object({
+    email: z.string({
+      required_error: 'email is required',
     }),
-       otp: z.string({
+    otp: z.string({
       required_error: 'otp is required',
     }),
-  })
-})
+  }),
+});
 const resetPasswordValidationSchema = z.object({
   body: z.object({
     email: z.string({
