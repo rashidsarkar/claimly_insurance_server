@@ -12,20 +12,23 @@ const createInsurer = async (userId: string, payload: Partial<IInsurer>) => {
   });
 };
 
-const getMyInsurers = async (userId: string, status: string) => {
-  console.log(userId, status);
+const getMyInsurers = async (userId: string, status?: string) => {
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid user id');
+  }
 
-  // const result = await Insurer.find({
-  //   normalUserId: new mongoose.Types.ObjectId(userId),
-  //   status: status,
-  // }).sort({
-  //   createdAt: -1,
-  // });
-  const result = await Insurer.find({
+  const query: any = {
     normalUserId: new mongoose.Types.ObjectId(userId),
-  });
-  if (!result) {
-    throw new AppError(StatusCodes.NOT_FOUND, 'Insurer record not found');
+  };
+
+  if (status) {
+    query.status = status;
+  }
+
+  const result = await Insurer.find(query).sort({ createdAt: -1 });
+
+  if (result.length === 0) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'No insurer record found');
   }
 
   return result;
