@@ -25,11 +25,13 @@ const getMyInsurers = async (userId: string, status?: string) => {
     query.status = status;
   }
 
-  const result = await Insurer.find(query).sort({ createdAt: -1 });
+  const result = await Insurer.find(query)
+    .sort({ createdAt: -1 })
+    .populate('normalUserId');
 
-  if (result.length === 0) {
-    throw new AppError(StatusCodes.NOT_FOUND, 'No insurer record found');
-  }
+  // if (result.length === 0) {
+  //   throw new AppError(StatusCodes.NOT_FOUND, 'No insurer record found');
+  // }
 
   return result;
 };
