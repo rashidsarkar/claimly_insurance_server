@@ -11,31 +11,56 @@ import {
  * =============================
  */
 const createInsurer = z.object({
-  body: z.object({
-    insurerName: z.string().min(1, 'Insurer name is required'),
+  body: z
+    .object({
+      notInsured: z.boolean(),
 
-    policyType: z.nativeEnum(ENUM_POLICY_TYPE),
+      insurerName: z.string().optional(),
+      policyType: z.nativeEnum(ENUM_POLICY_TYPE).optional(),
 
-    incidentDate: z.string().datetime(),
-    firstNotifiedDate: z.string().datetime(),
+      incidentDate: z.string().datetime(),
+      firstNotifiedDate: z.string().datetime(),
 
-    incidentDescription: z.string().min(1, 'Incident description is required'),
+      incidentDescription: z
+        .string()
+        .min(1, 'Incident description is required'),
 
-    insurerResponse: z.string().optional(),
-    userConcern: z.string().optional(),
+      insurerResponse: z.string().optional(),
+      userConcern: z.string().optional(),
 
-    complaintMade: z
-      .nativeEnum(ENUM_COMPLAINT_MADE)
-      .optional()
-      .default(ENUM_COMPLAINT_MADE.NO),
+      complaintMade: z
+        .nativeEnum(ENUM_COMPLAINT_MADE)
+        .optional()
+        .default(ENUM_COMPLAINT_MADE.NO),
 
-    complaintStatus: z.string().optional(),
+      complaintStatus: z.string().optional(),
 
-    status: z
-      .nativeEnum(ENUM_INSURER_STATUS)
-      .optional()
-      .default(ENUM_INSURER_STATUS.UNDER_REVIEW),
-  }),
+      status: z
+        .nativeEnum(ENUM_INSURER_STATUS)
+        .optional()
+        .default(ENUM_INSURER_STATUS.UNDER_REVIEW),
+    })
+    .superRefine((data, ctx) => {
+      if (data.notInsured === false) {
+        // insurerName required
+        if (!data.insurerName || data.insurerName.trim() === '') {
+          ctx.addIssue({
+            path: ['insurerName'],
+            message: 'Insurer name is required when not insured',
+            code: z.ZodIssueCode.custom,
+          });
+        }
+
+        // policyType required
+        if (!data.policyType) {
+          ctx.addIssue({
+            path: ['policyType'],
+            message: 'Policy type is required when not insured',
+            code: z.ZodIssueCode.custom,
+          });
+        }
+      }
+    }),
 });
 
 /**

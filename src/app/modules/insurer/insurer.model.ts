@@ -14,12 +14,12 @@ const insurerSchema = new Schema<IInsurer>(
       required: true,
     },
 
-    insurerName: { type: String, required: true },
+    insurerName: { type: String },
     policyType: {
       type: String,
       enum: Object.values(ENUM_POLICY_TYPE),
-      required: true,
     },
+    notInsured: { type: Boolean },
 
     incidentDate: { type: Date, required: true },
     firstNotifiedDate: { type: Date, required: true },
