@@ -417,7 +417,7 @@ const getMeFromDb = async (email: string) => {
 const updateMyProfileIntoDB = async (
   profileId: string,
   role: ENUM_USER_ROLE,
-  data: UpdateUserPayload,
+  data: UpdateUserPayload & { email: string },
 ) => {
   const session = await mongoose.startSession();
 

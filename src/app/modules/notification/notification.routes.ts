@@ -6,22 +6,12 @@ const router = express.Router();
 
 router.get(
   '/get-notifications',
-  auth(
-    USER_ROLE.ADMIN,
-    USER_ROLE.NORMALUSER,
-    USER_ROLE.PROVIDER,
-    USER_ROLE.USER,
-  ),
+  auth(USER_ROLE.ADMIN, USER_ROLE.NORMALUSER, USER_ROLE.USER),
   notificationController.getAllNotification,
 );
 router.patch(
   '/see-notifications',
-  auth(
-    USER_ROLE.ADMIN,
-    USER_ROLE.NORMALUSER,
-    USER_ROLE.PROVIDER,
-    USER_ROLE.USER,
-  ),
+  auth(USER_ROLE.ADMIN, USER_ROLE.NORMALUSER, USER_ROLE.USER),
   notificationController.seeNotification,
 );
 router.delete(
@@ -29,7 +19,7 @@ router.delete(
   auth(
     USER_ROLE.ADMIN,
     USER_ROLE.NORMALUSER,
-    USER_ROLE.PROVIDER,
+
     USER_ROLE.USER,
   ),
   notificationController.deleteNotification,
