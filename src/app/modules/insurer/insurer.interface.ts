@@ -26,6 +26,7 @@ export interface IInsurer {
 
   insurerName: string;
   policyType: ENUM_POLICY_TYPE;
+  notInsured: boolean;
 
   incidentDate: Date;
   firstNotifiedDate: Date;

@@ -307,7 +307,8 @@ const createUserIntoDB = async (userData: TUser) => {
 //     throw error;
 //   }
 // };
-const getUserFromDb = async () => {
+const getUserFromDb = async (profileId: string) => {
+  console.log(profileId);
   const user = await User.find().select('_id name email role');
   if (!user) {
     throw new AppError(StatusCodes.NOT_FOUND, 'User not found');
@@ -329,71 +330,71 @@ const getMeFromDb = async (email: string) => {
       },
     },
 
-    // 3️⃣ Lookup Provider
+    // // 3️⃣ Lookup Provider
     {
       $lookup: {
-        from: 'providers',
+        from: 'normalusers',
         localField: 'profileObjectId',
         foreignField: '_id',
-        as: 'provider',
+        as: 'normalUser',
       },
     },
 
-    {
-      $addFields: {
-        provider: { $arrayElemAt: ['$provider', 0] },
-      },
-    },
+    // {
+    //   $addFields: {
+    //     provider: { $arrayElemAt: ['$provider', 0] },
+    //   },
+    // },
 
     // 4️⃣ Lookup ProviderType
-    {
-      $lookup: {
-        from: 'providertypes',
-        localField: 'provider.providerTypeId',
-        foreignField: '_id',
-        as: 'providerType',
-      },
-    },
+    // {
+    //   $lookup: {
+    //     from: 'providertypes',
+    //     localField: 'provider.providerTypeId',
+    //     foreignField: '_id',
+    //     as: 'providerType',
+    //   },
+    // },
 
-    {
-      $addFields: {
-        providerType: { $arrayElemAt: ['$providerType', 0] },
-      },
-    },
+    // {
+    //   $addFields: {
+    //     providerType: { $arrayElemAt: ['$providerType', 0] },
+    //   },
+    // },
 
     // 5️⃣ Lookup Services (UPDATED – serviceId array based)
-    {
-      $lookup: {
-        from: 'services',
-        let: { serviceIds: '$provider.serviceId' }, // serviceId array pass করা
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $in: [
-                  '$_id',
-                  {
-                    $map: {
-                      input: '$$serviceIds',
-                      as: 'id',
-                      in: { $toObjectId: '$$id' },
-                    },
-                  },
-                ],
-              },
-            },
-          },
-          {
-            $project: {
-              _id: 0,
-              title: 1,
-              price: 1,
-            },
-          },
-        ],
-        as: 'services',
-      },
-    },
+    // {
+    //   $lookup: {
+    //     from: 'services',
+    //     let: { serviceIds: '$provider.serviceId' }, // serviceId array pass করা
+    //     pipeline: [
+    //       {
+    //         $match: {
+    //           $expr: {
+    //             $in: [
+    //               '$_id',
+    //               {
+    //                 $map: {
+    //                   input: '$$serviceIds',
+    //                   as: 'id',
+    //                   in: { $toObjectId: '$$id' },
+    //                 },
+    //               },
+    //             ],
+    //           },
+    //         },
+    //       },
+    //       {
+    //         $project: {
+    //           _id: 0,
+    //           title: 1,
+    //           price: 1,
+    //         },
+    //       },
+    //     ],
+    //     as: 'services',
+    //   },
+    // },
 
     // 6️⃣ Clean sensitive fields
     {
@@ -401,6 +402,7 @@ const getMeFromDb = async (email: string) => {
         password: 0,
         verifyEmailOTP: 0,
         verifyEmailOTPExpire: 0,
+        passwordChangedAt: 0,
       },
     },
   ]);
@@ -415,7 +417,7 @@ const getMeFromDb = async (email: string) => {
 const updateMyProfileIntoDB = async (
   profileId: string,
   role: ENUM_USER_ROLE,
-  data: UpdateUserPayload,
+  data: UpdateUserPayload & { email: string },
 ) => {
   const session = await mongoose.startSession();
 

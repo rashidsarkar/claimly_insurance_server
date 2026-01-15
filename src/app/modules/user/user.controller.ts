@@ -46,7 +46,7 @@ const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
 
 const getUsers = catchAsync(async (req, res) => {
   // console.log('test', req.tokenUser);
-  const result = await UserServices.getUserFromDb();
+  const result = await UserServices.getUserFromDb(req.user.profileId);
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,

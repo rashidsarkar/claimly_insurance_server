@@ -23,9 +23,9 @@ router.post(
 );
 
 router.get(
-  '/my-insurers',
+  '/my-insurers/:status',
   auth(USER_ROLE.NORMALUSER),
-  validateRequest(insurerValidations.getMyInsurer),
+  // validateRequest(insurerValidations.getMyInsurer),
   insurerController.getMyInsurers,
 );
 
