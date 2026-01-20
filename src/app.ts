@@ -15,11 +15,17 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: [
-      'http://localhost:3000',
+      'http://10.10.20.48:5173',
       'http://10.10.20.48:3000',
       'http://localhost:5454',
       'http://10.10.20.3:5454',
       'http://192.168.0.107:3000',
+      'http://192.168.0.104:3000',
+      'https://claimly-with-api.vercel.app',
+      'https://claimly-dashbord-with-api.vercel.app',
+      'http://localhost:5173',
+      'http://localhost:3000',
+      'http://10.10.20.48:5173',
     ],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'], // Explicitly allow the header you are sending

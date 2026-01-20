@@ -3,20 +3,18 @@ import NormalUser from '../normalUser/normalUser.model';
 import { User } from '../user/user.model';
 
 const getDashboardMetaData = async () => {
-  const [totalNormalUser, totalProvider, activeAppointment] = await Promise.all(
-    [
-      NormalUser.countDocuments(),
-      Insurer.countDocuments(),
-      User.countDocuments({
-        isBlocked: true,
-      }),
-    ],
-  );
+  const [totalNormalUser, totalInsurer, totalBlockedUser] = await Promise.all([
+    NormalUser.countDocuments(),
+    Insurer.countDocuments(),
+    User.countDocuments({
+      isBlocked: true,
+    }),
+  ]);
 
   return {
     totalNormalUser,
-    totalProvider,
-    activeAppointment,
+    totalInsurer,
+    totalBlockedUser,
   };
 };
 

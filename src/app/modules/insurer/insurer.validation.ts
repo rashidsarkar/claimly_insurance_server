@@ -13,7 +13,8 @@ import {
 const createInsurer = z.object({
   body: z
     .object({
-      notInsured: z.boolean(),
+      // notInsured: z.boolean(),
+      notInsured: z.preprocess((val) => val === 'true', z.boolean()),
 
       insurerName: z.string().optional(),
       policyType: z.nativeEnum(ENUM_POLICY_TYPE).optional(),
