@@ -18,4 +18,8 @@ export default {
   email_password: process.env.EMAIL_PASSWORD,
   admin_email: process.env.admin_email,
   admin_password: process.env.admin_password,
+  tenant_id: process.env.AZURE_TENANT_ID,
+  client_id: process.env.AZURE_CLIENT_ID,
+  client_secret: process.env.AZURE_CLIENT_SECRET,
+  outlook_email: process.env.OUTLOOK_EMAIL,
 };
