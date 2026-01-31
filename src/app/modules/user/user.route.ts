@@ -4,9 +4,9 @@ import { UserControllers } from './user.controller';
 import validateRequest from '../../middlewares/validateRequest';
 import { UserValidation } from './user.validation';
 
-import { uploadFile } from '../../utils/fileUploader';
 import auth from '../../middlewares/auth';
 import { USER_ROLE } from './user.const';
+import { uploadFile } from '../../utils/multer-s3-uploader';
 
 const router = express.Router();
 router.post(
