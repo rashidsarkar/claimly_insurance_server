@@ -37,14 +37,19 @@ const createInsurer = catchAsync(async (req, res) => {
 });
 
 const updateInsurer = catchAsync(async (req, res) => {
-  const { files } = req;
+  // const { files } = req;
 
-  if (files && typeof files === 'object') {
-    if ('report_Document' in files) {
-      req.body.report_Document = files['report_Document'].map(
-        (file) => file.path,
-      );
-    }
+  // if (files && typeof files === 'object') {
+  //   if ('report_Document' in files) {
+  //     req.body.report_Document = files['report_Document'].map(
+  //       (file) => file.path,
+  //     );
+  //   }
+  // }
+  const file: any = req.files?.report_Document;
+
+  if (req.files?.report_Document) {
+    req.body.report_Document = getCloudFrontUrl(file[0].key);
   }
 
   const result = await InsurerServices.updateInsurer(req.params.id, req.body);

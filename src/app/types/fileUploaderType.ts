@@ -10,7 +10,7 @@ declare namespace Express {
       // Add other fields you might expect to receive---
       profile_image?: File[];
       supporting_Documents?: File[];
-      banner?: File[];
+      report_Document?: File[];
       class_banner?: File[];
       category_image?: File[];
       address_document?: File[];
