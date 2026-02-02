@@ -32,11 +32,10 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
-  const { files } = req;
-  updateUserValidationSchema.parse({ body: req.body });
-  // 1️⃣ Handle profile image upload
-  if (files && typeof files === 'object' && 'profile_image' in files) {
-    req.body.profile_image = files['profile_image'][0].path;
+  const file: any = req.files?.profile_image;
+
+  if (req.files?.profile_image) {
+    req.body.profile_image = getCloudFrontUrl(file[0].key);
   }
 
   const result = await UserServices.updateMyProfileIntoDB(

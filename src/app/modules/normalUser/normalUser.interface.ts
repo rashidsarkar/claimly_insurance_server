@@ -8,7 +8,7 @@ export enum Gender {
 
 export interface INormalUser {
   user: Types.ObjectId;
-  profile_image: string;
+  profile_image?: string;
   fullName: string;
   email: string;
   phone: string;

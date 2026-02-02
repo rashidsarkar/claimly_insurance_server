@@ -9,6 +9,8 @@ import { createNormalUserData } from '../normalUser/normalUser.validation';
 import { emailSender } from '../../utils/emailSender';
 
 import unlinkFile from '../../utils/unLinkFile';
+import { deleteFileFromS3 } from '../../utils/deleteFromS3';
+import Admin from '../admin/admin.model';
 
 const generateVerifyCode = (): number => {
   return Math.floor(100000 + Math.random() * 900000);
@@ -432,20 +434,17 @@ const updateMyProfileIntoDB = async (
   try {
     await session.startTransaction();
 
-    // Direct approach without switch for specific models
     if (role === USER_ROLE.NORMALUSER) {
       const existingProfile =
         await NormalUser.findById(profileId).session(session);
+
       if (!existingProfile) {
         throw new AppError(StatusCodes.NOT_FOUND, 'Profile not found');
       }
 
       if (existingProfile.profile_image && data.profile_image) {
-        unlinkFile(existingProfile.profile_image);
+        deleteFileFromS3(existingProfile.profile_image);
       }
-
-      const { email, ...remaiiningData } = data;
-      console.log(email, remaiiningData);
 
       const updatedProfile = await NormalUser.findByIdAndUpdate(
         profileId,
@@ -453,7 +452,7 @@ const updateMyProfileIntoDB = async (
         {
           new: true,
           runValidators: true,
-          session: session,
+          session,
         },
       );
 
@@ -464,13 +463,49 @@ const updateMyProfileIntoDB = async (
             fullName: data.fullName,
             phone: data.phone,
           },
-          { session: session },
+          { session },
         );
       }
 
       await session.commitTransaction();
       return updatedProfile;
-    } else {
+    }
+
+    // ================= ADMIN PROFILE UPDATE =================
+    else if (role === USER_ROLE.ADMIN) {
+      const existingProfile = await Admin.findById(profileId).session(session);
+
+      if (!existingProfile) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'Profile not found');
+      }
+
+      if (existingProfile.profile_image && data.profile_image) {
+        deleteFileFromS3(existingProfile.profile_image);
+      }
+
+      const updatedProfile = await Admin.findByIdAndUpdate(profileId, data, {
+        new: true,
+        runValidators: true,
+        session,
+      });
+
+      if (existingProfile.user) {
+        await User.findByIdAndUpdate(
+          existingProfile.user.toString(),
+          {
+            fullName: data.fullName,
+            phone: data.phone,
+          },
+          { session },
+        );
+      }
+
+      await session.commitTransaction();
+      return updatedProfile;
+    }
+
+    // ========================================================
+    else {
       throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid user role');
     }
   } catch (error) {
