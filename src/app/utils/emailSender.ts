@@ -22,7 +22,9 @@ export const emailSender = async (toEmail: string, htmlText: string) => {
     // ৩. ইমেইল মেসেজ তৈরি
     const sendMail = {
       message: {
-        subject: 'Mail from your app',
+        // Claimly Support
+
+        subject: 'Mail from Claimly Support',
         body: {
           contentType: 'HTML',
           content: htmlText,

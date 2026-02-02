@@ -14,6 +14,8 @@ import {
 
 // import config from '../../config';
 import AppError from '../../errors/AppError';
+import config from '../../config';
+import { emailSender } from '../../utils/emailSender';
 
 //! Privacy and policy
 const addPrivacyPolicy = async (payload: any) => {
@@ -159,19 +161,18 @@ const deleteTermsConditions = async (id: string) => {
 };
 
 //! Contact Us
-// const addContactUs = async (payload: any) => {
-//     // return await ContactUs.create(payload);
-//     sendEmail({
-//         email: config.super_admin_email as string,
-//         // email: 'fawwmail@yopmail.com',
-//         subject: payload.subject,
-//         html: `<p>You have received a new message from the contact us form:</p>
-//         <p><strong>Name:</strong> ${payload.name}</p>
-//         <p><strong>Email:</strong> ${payload.email}</p>
-//         <p><strong>phone:</strong> ${payload.phone}</p>
-//         <p><strong>Message:</strong> ${payload.message}</p>`,
-//     });
-// };
+const addContactUs = async (payload: any) => {
+  await emailSender(
+    config.admin_email as string,
+    `<p>You have received a new message from the contact us form:</p>
+     <p><strong>Subject:</strong> ${payload.subject}</p>
+     <p><strong>Name:</strong> ${payload.name}</p>
+     <p><strong>Email:</strong> ${payload.email}</p>
+     <p><strong>Phone:</strong> ${payload.phone}</p>
+     <p><strong>Message:</strong> ${payload.message}</p>`,
+  );
+};
+
 const getContactUs = async () => {
   return await ContactUs.findOne();
 };
@@ -283,7 +284,7 @@ export const ManageService = {
   addPrivacyPolicy,
   addAboutUs,
   addTermsConditions,
-  // addContactUs,
+  addContactUs,
   getPrivacyPolicy,
   getAboutUs,
   getTermsConditions,

@@ -17,11 +17,11 @@ router.post(
   ManageController.addTermsConditions,
 );
 router.post('/add-partner', auth(USER_ROLE.ADMIN), ManageController.addPartner);
-// router.post(
-//     '/add-contact-us',
-//     // auth(USER_ROLE.superAdmin),
-//     ManageController.addContactUs
-// );
+router.post(
+  '/add-contact-us',
+  // auth(USER_ROLE.superAdmin),
+  ManageController.addContactUs,
+);
 router.post(
   '/add-privacy-policy',
   auth(USER_ROLE.ADMIN),

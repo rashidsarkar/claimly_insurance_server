@@ -39,15 +39,15 @@ const addTermsConditions = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
-// const addContactUs = catchAsync(async (req: Request, res: Response) => {
-//   const result = await ManageService.addContactUs(req.body);
-//   sendResponse(res, {
-//     statusCode: 200,
-//     success: true,
-//     message: 'Contact Us added successfully',
-//     data: result,
-//   });
-// });
+const addContactUs = catchAsync(async (req: Request, res: Response) => {
+  const result = await ManageService.addContactUs(req.body);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Contact Us added successfully',
+    data: result,
+  });
+});
 const addFAQ = catchAsync(async (req: Request, res: Response) => {
   const result = await ManageService.addFAQ(req.body);
   sendResponse(res, {
@@ -270,7 +270,7 @@ export const ManageController = {
   addPrivacyPolicy,
   addAboutUs,
   addTermsConditions,
-  // addContactUs,
+  addContactUs,
   getPrivacyPolicy,
   getAboutUs,
   getTermsConditions,
