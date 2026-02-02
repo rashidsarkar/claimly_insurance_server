@@ -26,6 +26,7 @@ router.get(
   auth(USER_ROLE.NORMALUSER, USER_ROLE.ADMIN),
   UserControllers.getMe,
 );
+router.get('/getMeAdmin', auth(USER_ROLE.ADMIN), UserControllers.getMe);
 
 //TODO -  removed this code after test
 router.get('/getAllUser', auth(USER_ROLE.ADMIN), UserControllers.getUsers);

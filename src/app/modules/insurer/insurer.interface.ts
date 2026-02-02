@@ -21,6 +21,8 @@ export enum ENUM_INSURER_STATUS {
   FAILED = 'FAILED',
 }
 
+// ["NRMA", "AAMI", "Allianz", "Budget Direct", "Suncorp", "Other"];
+
 export interface IInsurer {
   normalUserId: Types.ObjectId;
 

@@ -117,8 +117,8 @@ export const uploadFile = () => {
   }).fields([
     { name: 'image', maxCount: 1 },
     { name: 'profile_image', maxCount: 1 },
-    { name: 'supporting_Documents', maxCount: 2 },
-    { name: 'report_Document', maxCount: 2 },
+    { name: 'supporting_Documents', maxCount: 5 },
+    { name: 'report_Document', maxCount: 3 },
     { name: 'reject_evidence', maxCount: 2 },
     { name: 'address_document', maxCount: 1 },
     { name: 'task_attachments', maxCount: 5 },
