@@ -24,7 +24,7 @@ export const uploadFile = () => {
     const allowedFieldnames = [
       'image',
       'profile_image',
-      'category_image',
+      'supporting_Documents',
       'address_document',
       'task_attachments',
       'service_image',
@@ -74,8 +74,8 @@ export const uploadFile = () => {
       // Maintain the same folder structure as before
       if (file.fieldname === 'profile_image') {
         uploadPath = 'uploads/images/profile';
-      } else if (file.fieldname === 'category_image') {
-        uploadPath = 'uploads/images/category';
+      } else if (file.fieldname === 'supporting_Documents') {
+        uploadPath = 'uploads/documents/supporting_Documents';
       } else if (file.fieldname === 'video') {
         uploadPath = 'uploads/videos';
       } else if (file.fieldname === 'thumbnail') {
@@ -117,7 +117,7 @@ export const uploadFile = () => {
   }).fields([
     { name: 'image', maxCount: 1 },
     { name: 'profile_image', maxCount: 1 },
-    { name: 'category_image', maxCount: 2 },
+    { name: 'supporting_Documents', maxCount: 2 },
     { name: 'question_image', maxCount: 2 },
     { name: 'reject_evidence', maxCount: 2 },
     { name: 'address_document', maxCount: 1 },

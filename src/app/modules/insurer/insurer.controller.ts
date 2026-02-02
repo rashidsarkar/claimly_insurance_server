@@ -2,17 +2,25 @@ import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../../utils/catchAsync';
 import InsurerServices from './insurer.service';
 import sendResponse from '../../utils/sendResponse';
+import { getCloudFrontUrl } from '../../utils/multer-s3-uploader';
 
 const createInsurer = catchAsync(async (req, res) => {
-  const { files } = req;
+  // const { files } = req;
 
-  if (files && typeof files === 'object') {
-    if ('supporting_Documents' in files) {
-      req.body.supporting_Documents = files['supporting_Documents'].map(
-        (file) => file.path,
-      );
-    }
+  // if (files && typeof files === 'object') {
+  //   if ('supporting_Documents' in files) {
+  //     req.body.supporting_Documents = files['supporting_Documents'].map(
+  //       (file) => file.path,
+  //     );
+  //   }
+  // }
+
+  const file: any = req.files?.supporting_Documents;
+
+  if (req.files?.supporting_Documents) {
+    req.body.supporting_Documents = getCloudFrontUrl(file[0].key);
   }
+
   console.log(req.body);
 
   const result = await InsurerServices.createInsurer(

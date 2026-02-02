@@ -9,7 +9,7 @@ declare namespace Express {
       product_image?: File[]; // Add more fields as needed, e.g. category_image, profile_image
       // Add other fields you might expect to receive---
       profile_image?: File[];
-      course_banner?: File[];
+      supporting_Documents?: File[];
       banner?: File[];
       class_banner?: File[];
       category_image?: File[];

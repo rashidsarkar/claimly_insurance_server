@@ -4,7 +4,7 @@ import validateRequest from '../../middlewares/validateRequest';
 import insurerValidations from './insurer.validation';
 import insurerController from './insurer.controller';
 import { USER_ROLE } from '../user/user.const';
-import { uploadFile } from '../../utils/fileUploader';
+import { uploadFile } from '../../utils/multer-s3-uploader';
 
 const router = express.Router();
 
