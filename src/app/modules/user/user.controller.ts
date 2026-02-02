@@ -20,15 +20,15 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
   }
   // console.log();
 
-  // const result = await UserServices.createUserIntoDB(req.body);
+  const result = await UserServices.createUserIntoDB(req.body);
 
   sendResponse(res, {
     statusCode: StatusCodes.CREATED,
     success: true,
     message:
       'User registered successfully and verification email sent successfully',
-    // data: result,
-    data: req.body,
+    data: result,
+    // data: req.body,
   });
 });
 const updateMyProfile = catchAsync(async (req: Request, res: Response) => {

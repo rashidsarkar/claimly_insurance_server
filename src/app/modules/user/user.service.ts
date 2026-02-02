@@ -120,10 +120,18 @@ const createUserIntoDB = async (userData: TUser) => {
     await emailSender(
       userData.email,
       `
-    <h2>Email Verification OTP</h2>
-    <h1>${otp}</h1>
-    <p>This OTP is valid for 10 minutes only.</p>
-    `,
+      <div style="font-family: Arial, sans-serif; padding: 20px;">
+        <h2 style="color: #333;">Email Verification OTP</h2>
+        <p>Thank you for registering. Please use the following OTP to verify your email address:</p>
+        <div style="background-color: #f4f4f4; padding: 15px; border-radius: 5px; text-align: center; margin: 20px 0;">
+          <h1 style="color: #2c3e50; margin: 0;">${otp}</h1>
+        </div>
+        <p><strong>This OTP is valid for 10 minutes only.</strong></p>
+        <p>If you did not request this, please ignore this email.</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+        <p style="color: #666; font-size: 12px;">This is an automated message, please do not reply.</p>
+      </div>
+      `,
     );
 
     return result;
