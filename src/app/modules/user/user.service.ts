@@ -425,7 +425,7 @@ const getMeFromDb = async (email: string) => {
 };
 
 const getMeAdminFromDb = async (email: string) => {
-  const result = await Admin.aggregate([
+  const result = await User.aggregate([
     // 1️⃣ Match user
     {
       $match: { email },
@@ -441,10 +441,10 @@ const getMeAdminFromDb = async (email: string) => {
     // // 3️⃣ Lookup Provider
     {
       $lookup: {
-        from: 'normalusers',
+        from: 'admins',
         localField: 'profileObjectId',
         foreignField: '_id',
-        as: 'normalUser',
+        as: 'admin',
       },
     },
 
