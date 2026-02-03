@@ -424,6 +424,104 @@ const getMeFromDb = async (email: string) => {
   return result[0];
 };
 
+const getMeAdminFromDb = async (email: string) => {
+  const result = await Admin.aggregate([
+    // 1️⃣ Match user
+    {
+      $match: { email },
+    },
+
+    // 2️⃣ Convert profileId → ObjectId
+    {
+      $addFields: {
+        profileObjectId: { $toObjectId: '$profileId' },
+      },
+    },
+
+    // // 3️⃣ Lookup Provider
+    {
+      $lookup: {
+        from: 'normalusers',
+        localField: 'profileObjectId',
+        foreignField: '_id',
+        as: 'normalUser',
+      },
+    },
+
+    // {
+    //   $addFields: {
+    //     provider: { $arrayElemAt: ['$provider', 0] },
+    //   },
+    // },
+
+    // 4️⃣ Lookup ProviderType
+    // {
+    //   $lookup: {
+    //     from: 'providertypes',
+    //     localField: 'provider.providerTypeId',
+    //     foreignField: '_id',
+    //     as: 'providerType',
+    //   },
+    // },
+
+    // {
+    //   $addFields: {
+    //     providerType: { $arrayElemAt: ['$providerType', 0] },
+    //   },
+    // },
+
+    // 5️⃣ Lookup Services (UPDATED – serviceId array based)
+    // {
+    //   $lookup: {
+    //     from: 'services',
+    //     let: { serviceIds: '$provider.serviceId' }, // serviceId array pass করা
+    //     pipeline: [
+    //       {
+    //         $match: {
+    //           $expr: {
+    //             $in: [
+    //               '$_id',
+    //               {
+    //                 $map: {
+    //                   input: '$$serviceIds',
+    //                   as: 'id',
+    //                   in: { $toObjectId: '$$id' },
+    //                 },
+    //               },
+    //             ],
+    //           },
+    //         },
+    //       },
+    //       {
+    //         $project: {
+    //           _id: 0,
+    //           title: 1,
+    //           price: 1,
+    //         },
+    //       },
+    //     ],
+    //     as: 'services',
+    //   },
+    // },
+
+    // 6️⃣ Clean sensitive fields
+    {
+      $project: {
+        password: 0,
+        verifyEmailOTP: 0,
+        verifyEmailOTPExpire: 0,
+        passwordChangedAt: 0,
+      },
+    },
+  ]);
+
+  if (!result.length) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'User not found');
+  }
+
+  return result[0];
+};
+
 const updateMyProfileIntoDB = async (
   profileId: string,
   role: ENUM_USER_ROLE,
@@ -521,4 +619,5 @@ export const UserServices = {
   getMeFromDb,
   getUserFromDb,
   updateMyProfileIntoDB,
+  getMeAdminFromDb,
 };

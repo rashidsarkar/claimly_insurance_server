@@ -72,10 +72,20 @@ const getMe = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const getMeAdminFromDb = catchAsync(async (req, res) => {
+  const result = await UserServices.getMeAdminFromDb(req.user?.email as string);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'getMeAdminFromDb  found',
+    data: result,
+  });
+});
 
 export const UserControllers = {
   createUser,
   getMe,
   getUsers,
   updateMyProfile,
+  getMeAdminFromDb,
 };
