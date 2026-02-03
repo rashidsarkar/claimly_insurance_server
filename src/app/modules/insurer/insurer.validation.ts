@@ -3,6 +3,7 @@ import {
   ENUM_POLICY_TYPE,
   ENUM_COMPLAINT_MADE,
   ENUM_INSURER_STATUS,
+  ENUM_INSURER_NAME,
 } from './insurer.interface';
 
 /**
@@ -16,7 +17,7 @@ const createInsurer = z.object({
       // notInsured: z.boolean(),
       notInsured: z.preprocess((val) => val === 'true', z.boolean()),
 
-      insurerName: z.string().optional(),
+      insurerName: z.nativeEnum(ENUM_INSURER_NAME).optional(),
       policyType: z.nativeEnum(ENUM_POLICY_TYPE).optional(),
 
       incidentDate: z.string().datetime(),

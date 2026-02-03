@@ -21,12 +21,19 @@ export enum ENUM_INSURER_STATUS {
   FAILED = 'FAILED',
 }
 
-// ["NRMA", "AAMI", "Allianz", "Budget Direct", "Suncorp", "Other"];
+export enum ENUM_INSURER_NAME {
+  NRMA = 'NRMA',
+  AAMI = 'AAMI',
+  ALLIANZ = 'Allianz',
+  BUDGET_DIRECT = 'Budget Direct',
+  SUNCORP = 'Suncorp',
+  OTHER = 'Other',
+}
 
 export interface IInsurer {
   normalUserId: Types.ObjectId;
 
-  insurerName: string;
+  insurerName: ENUM_INSURER_NAME;
   policyType: ENUM_POLICY_TYPE;
   notInsured: boolean;
 
