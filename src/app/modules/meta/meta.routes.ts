@@ -16,10 +16,10 @@ router.get(
   auth(USER_ROLE.ADMIN),
   MetaController.getNormalUserChartData,
 );
-// router.get(
-//   '/provider-chart-data',
-//   auth(USER_ROLE.ADMIN),
-//   MetaController.getProviderChartData,
-// );
+router.get(
+  '/insurer-chart-data',
+
+  MetaController.getInsuredCartDataWithTrend,
+);
 
 export const metaRoutes = router;

@@ -24,21 +24,22 @@ const getNormalUserChartData = catchAsync(async (req, res) => {
     data: result,
   });
 });
-// const getProviderChartData = catchAsync(async (req, res) => {
-//   const result = await MetaService.getProviderChartData(
-//     Number(req?.query.year),
-//   );
-//   sendResponse(res, {
-//     statusCode: StatusCodes.OK,
-//     success: true,
-//     message: 'Organizer chart data retrieved successfully',
-//     data: result,
-//   });
-// });
+
+const getInsuredCartDataWithTrend = catchAsync(async (req, res) => {
+  const result = await MetaService.getInsuredCartDataWithTrend();
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Insurer chart data with trend retrieved successfully',
+    data: result,
+  });
+});
 
 const MetaController = {
   getDashboardMetaData,
   getNormalUserChartData,
+  getInsuredCartDataWithTrend,
   // getProviderChartData,
 };
 

@@ -1,6 +1,7 @@
 import { model, Schema } from 'mongoose';
 import {
   ENUM_COMPLAINT_MADE,
+  ENUM_INSURER_NAME,
   ENUM_INSURER_STATUS,
   ENUM_POLICY_TYPE,
   IInsurer,
@@ -14,7 +15,7 @@ const insurerSchema = new Schema<IInsurer>(
       required: true,
     },
 
-    insurerName: { type: String },
+    insurerName: { type: String, enum: Object.values(ENUM_INSURER_NAME) },
     policyType: {
       type: String,
       enum: Object.values(ENUM_POLICY_TYPE),
