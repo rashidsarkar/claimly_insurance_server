@@ -4,12 +4,75 @@ import { IInsurer } from './insurer.interface';
 import Insurer from './insurer.model';
 import mongoose from 'mongoose';
 import unlinkFile from '../../utils/unLinkFile';
+import config from '../../config';
+import { emailSender } from '../../utils/emailSender';
+import notificationService from '../notification/notification.services';
 
-const createInsurer = async (userId: string, payload: Partial<IInsurer>) => {
-  return await Insurer.create({
+// const createInsurer = async (
+//   userId: string,
+//   payload: Partial<IInsurer>,
+//   email: string,
+// ) => {
+//   return await Insurer.create({
+//     ...payload,
+//     normalUserId: userId,
+//   });
+//   const adminEmail = config.admin_email;
+// };
+const createInsurer = async (
+  userId: string,
+  payload: Partial<IInsurer>,
+  userEmail: string,
+) => {
+  // 1. Create the Insurer in Database
+  const result = await Insurer.create({
     ...payload,
     normalUserId: userId,
   });
+
+  const adminEmail = config.admin_email;
+
+  // 2. Create Notifications (Database only)
+  // Notification for User
+  await notificationService.createNotification(
+    userId, // Assuming userId is the profileId/receiver
+    'Insurer Profile Created',
+    'Your insurer profile has been successfully created at Claimly.',
+  );
+
+  // Notification for Admin
+  await notificationService.createNotification(
+    'admin', // Or the specific Admin ID
+    'New Insurer Registered',
+    `A new insurer  has registered on the platform.`,
+  );
+
+  // 3. Send Emails (Microsoft Graph API)
+  try {
+    // Email to User
+    const userHtml = `
+      <h1>Welcome to Claimly</h1>
+      <p>Hello,</p>
+      <p>Your insurer profile has been successfully created. You can now manage your claims.</p>
+    `;
+    emailSender(userEmail, userHtml);
+
+    // Email to Admin
+    const adminHtml = `
+      <h1>New Insurer Alert</h1>
+      <p>A new insurer has been registered:</p>
+    
+    `;
+    if (adminEmail) {
+      await emailSender(adminEmail, adminHtml);
+    }
+  } catch (error) {
+    // We log the error but don't necessarily want to crash the whole process
+    // if the insurer was already saved successfully.
+    console.error('Email sending failed:', error);
+  }
+
+  return result;
 };
 
 const getMyInsurers = async (userId: string, status?: string) => {

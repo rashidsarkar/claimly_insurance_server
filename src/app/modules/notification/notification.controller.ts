@@ -1,28 +1,29 @@
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import notificationService from './notification.services';
+import { StatusCodes } from 'http-status-codes';
 
 const getAllNotification = catchAsync(async (req, res) => {
   const result = await notificationService.getAllNotificationFromDB(
-    req?.query,
-    req?.user,
+    req.query,
+    req.user,
   );
 
   sendResponse(res, {
-    statusCode: 200,
+    statusCode: StatusCodes.OK,
     success: true,
-    message: 'Notification retrieved successfully',
+    message: 'Notifications retrieved successfully',
     data: result,
   });
 });
 
 const seeNotification = catchAsync(async (req, res) => {
-  const result = await notificationService.seeNotification(req?.user);
+  const result = await notificationService.seeNotification(req.user);
 
   sendResponse(res, {
-    statusCode: 200,
+    statusCode: StatusCodes.OK,
     success: true,
-    message: 'Notification seen successfully',
+    message: 'Notifications marked as seen',
     data: result,
   });
 });
@@ -32,50 +33,28 @@ const deleteNotification = catchAsync(async (req, res) => {
     req.params.id,
     req.user.profileId,
   );
+
   sendResponse(res, {
-    statusCode: 200,
+    statusCode: StatusCodes.OK,
     success: true,
-    message: 'Notification removed',
+    message: 'Notification removed successfully',
     data: result,
   });
 });
 
-// const createNotification = async (req: Request, res: Response) => {
-//   try {
-//     const { receivers, title, message, data } = req.body;
-
-//     const notifications = await notificationService.createNotification(
-//       receivers,
-//       title,
-//       message,
-//       data
-//     );
-
-//     res.status(201).json({
-//       success: true,
-//       message: 'Notification sent successfully',
-//       data: notifications
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: 'Failed to send notification'
-//     });
-//   }
-// };
 const createNotification = catchAsync(async (req, res) => {
-  const { receivers, title, message, data } = req.body;
+  const { receivers, title, message } = req.body;
 
-  const result = await notificationService.createNotificationAndSend(
+  const result = await notificationService.createNotification(
     receivers,
     title,
     message,
-    data,
   );
+
   sendResponse(res, {
-    statusCode: 200,
+    statusCode: StatusCodes.CREATED,
     success: true,
-    message: 'Notification sent successfully',
+    message: 'Notification created successfully',
     data: result,
   });
 });

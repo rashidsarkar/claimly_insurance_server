@@ -26,6 +26,7 @@ const createInsurer = catchAsync(async (req, res) => {
   const result = await InsurerServices.createInsurer(
     req.user.profileId,
     req.body,
+    req.user.email,
   );
 
   sendResponse(res, {
