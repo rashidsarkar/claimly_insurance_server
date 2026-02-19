@@ -51,7 +51,11 @@ const updateInsurer = catchAsync(async (req, res) => {
   const file: any = req.files?.report_Document;
 
   if (req.files?.report_Document) {
-    req.body.report_Document = getCloudFrontUrl(file[0].key);
+    // req.body.report_Document = getCloudFrontUrl(file[0].key);
+    //
+    req.body.report_Document = req.files.report_Document.map((file: any) => {
+      return getCloudFrontUrl(file.key);
+    });
   }
 
   const result = await InsurerServices.updateInsurer(req.params.id, req.body);
