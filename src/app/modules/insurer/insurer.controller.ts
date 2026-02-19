@@ -19,7 +19,13 @@ const createInsurer = catchAsync(async (req, res) => {
   const file: any = req.files?.supporting_Documents;
 
   if (req.files?.supporting_Documents) {
-    req.body.supporting_Documents = getCloudFrontUrl(file[0].key);
+    // req.body.supporting_Documents = getCloudFrontUrl(file[0].key);
+
+    req.body.supporting_Documents = req.files.supporting_Documents.map(
+      (file: any) => {
+        return getCloudFrontUrl(file.key);
+      },
+    );
   }
 
   console.log(req.body);
