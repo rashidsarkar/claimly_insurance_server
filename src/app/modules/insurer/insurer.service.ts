@@ -148,61 +148,44 @@ const getSingleInsurer = async (id: string) => {
 };
 
 const updateInsurer = async (id: string, payload: Partial<IInsurer>) => {
-  // if (payload.status === ENUM_INSURER_STATUS.FAILED && !payload.failureNote) {
-  //   throw new AppError(
-  //     StatusCodes.BAD_REQUEST,
-  //     'failureNote is required when status is failed',
-  //   );
-  // }
-
+  // ১. ইনস্যুরার খুঁজে বের করা এবং ইউজার পপুলেট করা
   const insurer = await Insurer.findById(id).populate('normalUserId');
+
   if (!insurer) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Insurer record not found');
   }
 
-  // console.log(insurer.normalUserId?.email);
-  const userEmail = NormalUser.findById(insurer.normalUserId);
+  // ২. পপুলেটেড অবজেক্ট থেকে ইমেইল সংগ্রহ করা
+  // পপুলেট করার পর normalUserId আর শুধু আইডি থাকে না, এটি একটি অবজেক্ট হয়ে যায়।
+  const userData = insurer.normalUserId as any;
+  const targetEmail = userData?.email;
 
-  // Notification for Admin
-  await notificationService.createNotification(
-    USER_ROLE.ADMIN, // Or the specific Admin ID
-    'Insurer Profile Updated',
-    `An insurer profile has been updated. Current status: ${payload.status}`,
-  );
+  // ৩. ইমেইল পাঠানো (যদি স্ট্যাটাস আপডেট হয়)
+  if (targetEmail && payload.status) {
+    try {
+      const userHtml = `
+        <h1>Your Insurer  Has Been Updated</h1>
+        <p>Hello,</p>
+        <p>Your insurer  has been updated. Current status: <strong>${payload.status}</strong></p>
+      `;
 
-  // 3. Send Emails (Microsoft Graph API)
-  try {
-    // Email to Admin
-    const adminHtml = `
-      <h1> Insurer Profile Updated</h1>
-      <p>An insurer profile has been updated.</p>
-    `;
-
-    // const userEmail = insurer.normalUserId.; // Assuming normalUserId is populated and has an email field
-    const userHtml = `
-      <h1>Your Insurer Profile Has Been Updated</h1>
-      <p>Hello,</p>
-      <p>Your insurer profile has been updated. Current status: ${payload.status}</p>
-    `;
-
-    if (userEmail?.email) {
-      await emailSender(userEmail.email, userHtml);
+      await emailSender(targetEmail, userHtml);
+      console.log(`Email sent to: ${targetEmail}`);
+    } catch (error) {
+      console.error('Email sending failed:', error);
+      // ইমেইল না গেলে পুরো প্রসেস থামিয়ে দিতে চাইলে throw করতে পারেন,
+      // নাহলে শুধু লগ করে রাখতে পারেন।
     }
-    if (adminEmail) {
-      await emailSender(adminEmail, adminHtml);
-    }
-  } catch (error) {
-    // We log the error but don't necessarily want to crash the whole process
-    // if the insurer was already saved successfully.
-    console.error('Email sending failed:', error);
   }
 
-  return await Insurer.findByIdAndUpdate(id, payload, {
+  // ৪. ডাটাবেজ আপডেট করা
+  const result = await Insurer.findByIdAndUpdate(id, payload, {
     new: true,
     runValidators: true,
   });
-};
 
+  return result;
+};
 const deleteInsurer = async (id: string) => {
   const insurer = await Insurer.findById(id);
   if (!insurer) {
