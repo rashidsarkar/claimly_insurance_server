@@ -8,6 +8,8 @@ import config from '../../config';
 import { emailSender } from '../../utils/emailSender';
 import notificationService from '../notification/notification.services';
 import { USER_ROLE } from '../user/user.const';
+import NormalUser from '../normalUser/normalUser.model';
+const adminEmail = config.admin_email;
 
 // const createInsurer = async (
 //   userId: string,
@@ -26,8 +28,6 @@ const createInsurer = async (userId: string, payload: Partial<IInsurer>) => {
     ...payload,
     normalUserId: userId,
   });
-
-  const adminEmail = config.admin_email;
 
   // // 2. Create Notifications (Database only)
   // // Notification for User
@@ -155,9 +155,46 @@ const updateInsurer = async (id: string, payload: Partial<IInsurer>) => {
   //   );
   // }
 
-  const insurer = await Insurer.findById(id);
+  const insurer = await Insurer.findById(id).populate('normalUserId');
   if (!insurer) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Insurer record not found');
+  }
+
+  // console.log(insurer.normalUserId?.email);
+  const userEmail = NormalUser.findById(insurer.normalUserId);
+
+  // Notification for Admin
+  await notificationService.createNotification(
+    USER_ROLE.ADMIN, // Or the specific Admin ID
+    'Insurer Profile Updated',
+    `An insurer profile has been updated. Current status: ${payload.status}`,
+  );
+
+  // 3. Send Emails (Microsoft Graph API)
+  try {
+    // Email to Admin
+    const adminHtml = `
+      <h1> Insurer Profile Updated</h1>
+      <p>An insurer profile has been updated.</p>
+    `;
+
+    // const userEmail = insurer.normalUserId.; // Assuming normalUserId is populated and has an email field
+    const userHtml = `
+      <h1>Your Insurer Profile Has Been Updated</h1>
+      <p>Hello,</p>
+      <p>Your insurer profile has been updated. Current status: ${payload.status}</p>
+    `;
+
+    if (userEmail?.email) {
+      await emailSender(userEmail.email, userHtml);
+    }
+    if (adminEmail) {
+      await emailSender(adminEmail, adminHtml);
+    }
+  } catch (error) {
+    // We log the error but don't necessarily want to crash the whole process
+    // if the insurer was already saved successfully.
+    console.error('Email sending failed:', error);
   }
 
   return await Insurer.findByIdAndUpdate(id, payload, {
