@@ -7,11 +7,23 @@ const getAllNotificationFromDB = async (
   query: Record<string, any>,
   user: JwtPayload,
 ) => {
-  const searchField = user?.role === USER_ROLE.ADMIN ? 'name' : 'title';
+  // Fix 1: Always search 'title' because 'name' doesn't exist in Notification schema
+  const searchField = 'title';
+
+  // Fix 2: If the user is an Admin, they should see notifications sent to
+  // their specific profileId, the string "admin", and "all".
+  const receiverConditions: any[] = [
+    { receiver: user.profileId },
+    { receiver: 'all' },
+  ];
+
+  if (user.role === USER_ROLE.ADMIN) {
+    receiverConditions.push({ receiver: USER_ROLE.ADMIN }); // Checks for "admin" string
+  }
 
   const notificationQuery = new QueryBuilder(
     Notification.find({
-      $or: [{ receiver: user.profileId }, { receiver: 'all' }],
+      $or: receiverConditions,
       deleteBy: { $ne: user.profileId },
     }),
     query,
@@ -27,14 +39,25 @@ const getAllNotificationFromDB = async (
 };
 
 const seeNotification = async (user: JwtPayload) => {
+  const receiverConditions: any[] = [
+    { receiver: user.profileId },
+    { receiver: 'all' },
+  ];
+
+  // Logic: Admin needs to mark notifications sent to "admin" as seen too
+  if (user?.role === USER_ROLE.ADMIN) {
+    receiverConditions.push({ receiver: USER_ROLE.ADMIN });
+  }
+
   const result = await Notification.updateMany(
     {
-      $or: [{ receiver: user.profileId }, { receiver: 'all' }],
-      seenBy: { $ne: user.profileId }, // Only update those not seen yet
+      $or: receiverConditions,
+      seenBy: { $ne: user.profileId }, // Only update if NOT already in the seenBy array
     },
     { $addToSet: { seenBy: user.profileId } },
     { runValidators: true },
   );
+
   return result;
 };
 
@@ -45,13 +68,17 @@ const deleteNotification = async (id: string, profileId: string) => {
     return null;
   }
 
-  // If it's a direct notification to one person, delete it completely
+  // ১. যদি নোটিফিকেশনটি সরাসরি ওই ইউজারের প্রোফাইল আইডিতে পাঠানো হয় (Private)
   if (notification.receiver === profileId) {
     return await Notification.findByIdAndDelete(id);
   }
 
-  // If it's a broadcast ('all'), just add the user to deleteBy list
-  if (notification.receiver === 'all') {
+  // ২. যদি নোটিফিকেশনটি সবার জন্য ('all') অথবা সব অ্যাডমিনের জন্য ('admin') হয়
+  // এই ক্ষেত্রে আমরা হার্ড ডিলিট করবো না, শুধু ইউজারের আইডিতে deleteBy তে যোগ করবো
+  if (
+    notification.receiver === 'all' ||
+    notification.receiver === USER_ROLE.ADMIN
+  ) {
     return await Notification.findByIdAndUpdate(
       id,
       {
@@ -63,7 +90,6 @@ const deleteNotification = async (id: string, profileId: string) => {
 
   return null;
 };
-
 const createNotification = async (
   receivers: string | string[],
   title: string,

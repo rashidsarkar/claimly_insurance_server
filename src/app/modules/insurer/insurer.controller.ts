@@ -15,6 +15,7 @@ const createInsurer = catchAsync(async (req, res) => {
   //   }
   // }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const file: any = req.files?.supporting_Documents;
 
   if (req.files?.supporting_Documents) {
@@ -26,7 +27,6 @@ const createInsurer = catchAsync(async (req, res) => {
   const result = await InsurerServices.createInsurer(
     req.user.profileId,
     req.body,
-    req.user.email,
   );
 
   sendResponse(res, {
@@ -47,6 +47,7 @@ const updateInsurer = catchAsync(async (req, res) => {
   //     );
   //   }
   // }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const file: any = req.files?.report_Document;
 
   if (req.files?.report_Document) {

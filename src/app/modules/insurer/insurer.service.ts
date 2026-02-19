@@ -7,6 +7,7 @@ import unlinkFile from '../../utils/unLinkFile';
 import config from '../../config';
 import { emailSender } from '../../utils/emailSender';
 import notificationService from '../notification/notification.services';
+import { USER_ROLE } from '../user/user.const';
 
 // const createInsurer = async (
 //   userId: string,
@@ -19,11 +20,7 @@ import notificationService from '../notification/notification.services';
 //   });
 //   const adminEmail = config.admin_email;
 // };
-const createInsurer = async (
-  userId: string,
-  payload: Partial<IInsurer>,
-  userEmail: string,
-) => {
+const createInsurer = async (userId: string, payload: Partial<IInsurer>) => {
   // 1. Create the Insurer in Database
   const result = await Insurer.create({
     ...payload,
@@ -32,30 +29,30 @@ const createInsurer = async (
 
   const adminEmail = config.admin_email;
 
-  // 2. Create Notifications (Database only)
-  // Notification for User
-  await notificationService.createNotification(
-    userId, // Assuming userId is the profileId/receiver
-    'Insurer Profile Created',
-    'Your insurer profile has been successfully created at Claimly.',
-  );
+  // // 2. Create Notifications (Database only)
+  // // Notification for User
+  // await notificationService.createNotification(
+  //   userId, // Assuming userId is the profileId/receiver
+  //   'Insurer Profile Created',
+  //   'Your insurer profile has been successfully created at Claimly.',
+  // );
 
   // Notification for Admin
   await notificationService.createNotification(
-    'admin', // Or the specific Admin ID
+    USER_ROLE.ADMIN, // Or the specific Admin ID
     'New Insurer Registered',
     `A new insurer  has registered on the platform.`,
   );
 
   // 3. Send Emails (Microsoft Graph API)
   try {
-    // Email to User
-    const userHtml = `
-      <h1>Welcome to Claimly</h1>
-      <p>Hello,</p>
-      <p>Your insurer profile has been successfully created. You can now manage your claims.</p>
-    `;
-    emailSender(userEmail, userHtml);
+    // // Email to User
+    // const userHtml = `
+    //   <h1>Welcome to Claimly</h1>
+    //   <p>Hello,</p>
+    //   <p>Your insurer profile has been successfully created. You can now manage your claims.</p>
+    // `;
+    // emailSender(userEmail, userHtml);
 
     // Email to Admin
     const adminHtml = `
@@ -80,6 +77,7 @@ const getMyInsurers = async (userId: string, status?: string) => {
     throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid user id');
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const query: any = {
     normalUserId: new mongoose.Types.ObjectId(userId),
   };
