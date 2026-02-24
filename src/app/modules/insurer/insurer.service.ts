@@ -177,11 +177,6 @@ const updateInsurer = async (id: string, payload: Partial<IInsurer>) => {
 
     <p>
       There was an update with your Claimly report.
-      ${
-        payload?.status
-          ? `<br/>Current status: <strong>${payload.status.replace('_', ' ')}</strong>.`
-          : ''
-      }
     </p>
 
     <p>
