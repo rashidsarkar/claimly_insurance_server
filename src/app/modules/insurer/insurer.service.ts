@@ -174,7 +174,7 @@ const updateInsurer = async (id: string, payload: Partial<IInsurer>) => {
         <div style="font-family: Arial, sans-serif; line-height: 1.6;">
           <h2>Hello ${targetName},</h2>
 
-          <p>Your <strong>Claimly report is now ready.</strong></p>
+          <p>Your <strong>Claimly report is  ${payload.status}.</strong></p>
 
           <p>You can review your report using the link below:</p>
 
