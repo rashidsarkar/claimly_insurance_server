@@ -40,7 +40,7 @@ const createInsurer = async (userId: string, payload: Partial<IInsurer>) => {
   // Notification for Admin
   await notificationService.createNotification(
     USER_ROLE.ADMIN, // Or the specific Admin ID
-    'New Insurer Registered',
+    'New Claimly submitted',
     `New insurer registered on the platform..`,
   );
 
