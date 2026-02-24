@@ -41,7 +41,10 @@ const createInsurer = async (userId: string, payload: Partial<IInsurer>) => {
   await notificationService.createNotification(
     USER_ROLE.ADMIN, // Or the specific Admin ID
     'New Claimly submitted',
-    `New insurer registered on the platform..`,
+    `A new claim has been submitted`,
+    //     New Claimly submitted
+
+    // A new claim has been submitted
   );
 
   // 3. Send Emails (Microsoft Graph API)
