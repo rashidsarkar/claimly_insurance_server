@@ -171,34 +171,36 @@ const updateInsurer = async (id: string, payload: Partial<IInsurer>) => {
       //   <p>Your insurer  has been updated. Current status: <strong>${payload.status}</strong></p>
       // `;
       const userHtml = `
-        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-          <h2>Hello ${targetName},</h2>
+  <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111;">
+    
+    <p>Hello,</p>
 
-          <p>Your <strong>Claimly report is  ${payload.status}.</strong></p>
+    <p>
+      There was an update with your Claimly report.
+      ${
+        payload?.status
+          ? `<br/>Current status: <strong>${payload.status.replace('_', ' ')}</strong>.`
+          : ''
+      }
+    </p>
 
-          <p>You can review your report using the link below:</p>
+    <p>
+      <a href="${reportLink}" style="color: #2563eb; text-decoration: underline;">
+        View My Report
+      </a>
+    </p>
 
-          <p>
-            <a href="${reportLink}" 
-               style="
-                 background-color: #2563eb;
-                 color: white;
-                 padding: 10px 18px;
-                 text-decoration: none;
-                 border-radius: 6px;
-                 display: inline-block;
-               ">
-               View My Report
-            </a>
-          </p>
+    <p>
+      If you have any questions, feel free to reply to this email.
+    </p>
 
-          <p>If you have any questions, feel free to reply to this email.</p>
+    <p>
+      Warm Regards,<br/>
+      Claimly Support.
+    </p>
 
-          <br/>
-
-          <p>Warm Regards,<br/><strong>Claimly Support</strong></p>
-        </div>
-      `;
+  </div>
+`;
 
       await emailSender(targetEmail, userHtml);
       console.log(`Email sent to: ${targetEmail}`);
