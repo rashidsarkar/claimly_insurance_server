@@ -176,15 +176,23 @@ const updateInsurer = async (id: string, payload: Partial<IInsurer>) => {
       const userHtml = `
   <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111;">
     
-    <p>Hello,</p>
+    <p>Hello ${targetName},</p>
 
     <p>
       There was an update with your Claimly report.
     </p>
 
-    <p>
-      <a href="${reportLink}" style="color: #2563eb; text-decoration: underline;">
-        View My Report
+      <p>
+      <a href="${reportLink}" 
+         style="
+           background-color: #2563eb;
+           color: white;
+           padding: 10px 18px;
+           text-decoration: none;
+           border-radius: 6px;
+           display: inline-block;
+         ">
+         View My Report
       </a>
     </p>
 
