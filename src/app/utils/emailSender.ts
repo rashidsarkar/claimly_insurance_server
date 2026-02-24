@@ -24,7 +24,7 @@ export const emailSender = async (toEmail: string, htmlText: string) => {
       message: {
         // Claimly Support
 
-        subject: 'Mail from Claimly Support',
+        subject: 'Update from Claimly Support',
         body: {
           contentType: 'HTML',
           content: htmlText,
