@@ -164,10 +164,40 @@ const updateInsurer = async (id: string, payload: Partial<IInsurer>) => {
   // ৩. ইমেইল পাঠানো (যদি স্ট্যাটাস আপডেট হয়)
   if (targetEmail && payload.status) {
     try {
+      const reportLink = `https://claimly-with-api.vercel.app/my_claims`;
+      // const userHtml = `
+      //   <h1>Your Insurer  Has Been Updated</h1>
+      //   <p>Hello,${targetName}</p>
+      //   <p>Your insurer  has been updated. Current status: <strong>${payload.status}</strong></p>
+      // `;
       const userHtml = `
-        <h1>Your Insurer  Has Been Updated</h1>
-        <p>Hello,${targetName}</p>
-        <p>Your insurer  has been updated. Current status: <strong>${payload.status}</strong></p>
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+          <h2>Hello ${targetName},</h2>
+
+          <p>Your <strong>Claimly report is now ready.</strong></p>
+
+          <p>You can review your report using the link below:</p>
+
+          <p>
+            <a href="${reportLink}" 
+               style="
+                 background-color: #2563eb;
+                 color: white;
+                 padding: 10px 18px;
+                 text-decoration: none;
+                 border-radius: 6px;
+                 display: inline-block;
+               ">
+               View My Report
+            </a>
+          </p>
+
+          <p>If you have any questions, feel free to reply to this email.</p>
+
+          <br/>
+
+          <p>Warm Regards,<br/><strong>Claimly Support</strong></p>
+        </div>
       `;
 
       await emailSender(targetEmail, userHtml);
