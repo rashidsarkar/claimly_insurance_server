@@ -69,7 +69,7 @@ const updateInsurer = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
-    message: 'Insurer record updated successfully',
+    message: 'Claimly Report Updated successfully',
     data: result,
   });
 });
@@ -79,7 +79,7 @@ const deleteInsurer = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
-    message: 'Insurer record deleted successfully',
+    message: 'Claimly Report deleted successfully',
     data: result,
   });
 });

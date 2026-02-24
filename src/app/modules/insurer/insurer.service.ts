@@ -41,7 +41,7 @@ const createInsurer = async (userId: string, payload: Partial<IInsurer>) => {
   await notificationService.createNotification(
     USER_ROLE.ADMIN, // Or the specific Admin ID
     'New Insurer Registered',
-    `A new insurer  has registered on the platform.`,
+    `A new claim has been submitted.`,
   );
 
   // 3. Send Emails (Microsoft Graph API)
@@ -58,7 +58,7 @@ const createInsurer = async (userId: string, payload: Partial<IInsurer>) => {
     const adminHtml = `
       <h1>New Insurer Alert</h1>
       <p>A new insurer has been registered:</p>
-    
+   
     `;
     if (adminEmail) {
       await emailSender(adminEmail, adminHtml);
@@ -159,13 +159,14 @@ const updateInsurer = async (id: string, payload: Partial<IInsurer>) => {
   // পপুলেট করার পর normalUserId আর শুধু আইডি থাকে না, এটি একটি অবজেক্ট হয়ে যায়।
   const userData = insurer.normalUserId as any;
   const targetEmail = userData?.email;
+  const targetName = userData?.fullName || 'User';
 
   // ৩. ইমেইল পাঠানো (যদি স্ট্যাটাস আপডেট হয়)
   if (targetEmail && payload.status) {
     try {
       const userHtml = `
         <h1>Your Insurer  Has Been Updated</h1>
-        <p>Hello,</p>
+        <p>Hello,${targetName}</p>
         <p>Your insurer  has been updated. Current status: <strong>${payload.status}</strong></p>
       `;
 

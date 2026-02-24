@@ -38,8 +38,14 @@ const auth = (...requiredRoles: TUserRole[]) => {
       throw new AppError(StatusCodes.NOT_FOUND, 'User not found');
     }
     const isBlocked = existingUser.isBlocked;
+    // if (isBlocked) {
+    //   throw new AppError(StatusCodes.FORBIDDEN, 'User is Blocked');
+    // }
     if (isBlocked) {
-      throw new AppError(StatusCodes.FORBIDDEN, 'User is Blocked');
+      throw new AppError(
+        StatusCodes.FORBIDDEN,
+        'Account Access Restricted\nPlease contact support for further information.',
+      );
     }
     const isVerifyEmailOTPVerified = existingUser.isVerifyEmailOTPVerified;
     if (!isVerifyEmailOTPVerified) {
