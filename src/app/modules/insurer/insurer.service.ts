@@ -179,7 +179,7 @@ const updateInsurer = async (id: string, payload: Partial<IInsurer>) => {
     <p>Hello ${targetName},</p>
 
     <p>
-      There was an update with your Claimly report.
+      There was an update with your Claimly report..
     </p>
 
       <p>
